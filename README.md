@@ -109,7 +109,7 @@ cd ~/ros_ws
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
-export PYTHONPATH=$PYTHONPATH:/home/utku/ros2_foxy/src/justhink-ros/venv/lib/python3.8/site-packages/
+export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
 
 ros2 run justhink_situation show_situation
 ```
