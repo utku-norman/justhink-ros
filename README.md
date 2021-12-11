@@ -48,11 +48,12 @@ mkdir -p ~/ros_ws/src
 cd ~/ros_ws/
 ```
 
-2) Clone this [justhink-ros] ROS2 packages folder inside the 'src' folder of your workspace:
+2) Clone this [justhink-ros] ROS2 packages folder inside the 'src' folder of your workspace and switch to the `ros2` branch:
 ```
 cd ~/ros_ws/src
 
 git clone https://github.com/utku-norman/justhink-ros.git
+git checkout ros2
 ```
 
 3) For the dependencies, create a new Python [virtual environment](https://docs.python.org/3/tutorial/venv.html) and activate it. 
