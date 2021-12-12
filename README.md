@@ -4,14 +4,6 @@
 
 ## Overview
 
-This repository contains the [ROS] package to run the pedagogical scenario that contains a human-robot collaborative learning activity for school children, named [JUSThink](https://www.epfl.ch/labs/chili/index-html/research/animatas/justhink/). The scenario aims to improve their computational thinking skills by applying abstract and algorithmic reasoning to solve an unfamiliar problem on networks.
-
-* In an individual activity, a human learner is given a network of gold mines with possible positions for railway tracks, where each track if it is built connects one mine to another. The cost of each track is visible. The goal is to collect the gold by connecting the gold mines to each other, while spending as little as possible to build the tracks.
-* In a collaborative activity, the human and the robot as (same-status) peers collaboratively construct a solution to this problem by deciding together which tracks to build, and submit it as their solution to the system. They take turns in suggesting to select a specific connection, where the other either agrees or disagrees with this suggestion. A track will be built only if it is suggested by one and accepted by the other.
-
-**Keywords:** artificial intelligence, human-robot interaction, mutual understanding, collaborative learning, computational thinking
-
-
 ### License
 
 The whole package is under MIT License, see [LICENSE](LICENSE).
@@ -53,6 +45,8 @@ cd ~/ros_ws/
 cd ~/ros_ws/src
 
 git clone https://github.com/utku-norman/justhink-ros.git
+
+cd justhink-ros
 git checkout ros2
 ```
 
@@ -86,6 +80,9 @@ pip install -e .
 
 # Install Python dependencies for running ROS in the virtual environment.
 # pip install empy catkin_pkg lark
+
+# No longer use the virtual environment; we simply refer to it for the installation of justhink_world to keep it encapsulated and independent.
+# deactivate
 ```
 
 For issues, details on installation and usage, refer to the [README](https://github.com/utku-norman/justhink_world/#readme) of [justhink_world].
@@ -113,8 +110,7 @@ source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
 # Do this once per terminal not to extend PYTHONPATH with the same entry.
-# export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
-export PYTHONPATH=$PYTHONPATH:/home/utku/ros2_foxy/src/justhink-ros/venv/lib/python3.8/site-packages/
+export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
 
 ros2 run justhink_situation show_situation
 ```
