@@ -79,7 +79,7 @@ cd justhink_world
 pip install -e .
 
 # Install Python dependencies for running ROS in the virtual environment.
-# pip install empy catkin_pkg lark
+pip install empy catkin_pkg lark
 
 # No longer use the virtual environment; we simply refer to it for the installation of justhink_world to keep it encapsulated and independent.
 # deactivate
@@ -123,9 +123,19 @@ cd ~/ros_ws
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
-export PYTHONPATH=$PYTHONPATH:/home/utku/ros2_foxy/src/justhink-ros/venv/lib/python3.8/site-packages/
+export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
 
 ros2 run justhink_touch convert_touch
+```
+
+In a third terminal, can monitor touch points with:
+```
+cd ~/ros_ws
+
+source /opt/ros/foxy/setup.bash
+source install/local_setup.bash
+
+ros2 topic echo /justhink_touch/intended_points
 ```
 
 
