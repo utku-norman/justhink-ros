@@ -80,14 +80,11 @@ pip install -e .
 
 # Install Python dependencies for running ROS in the virtual environment.
 pip install empy catkin_pkg lark
-
-# No longer use the virtual environment; we simply refer to it for the installation of justhink_world to keep it encapsulated and independent.
-# deactivate
 ```
 
 For issues, details on installation and usage, refer to the [README](https://github.com/utku-norman/justhink_world/#readme) of [justhink_world].
 
-5) Install these packages:
+5) Install these packages (while the virtual environment is activated):
 ```
 cd ~/ros_ws
 
@@ -188,21 +185,16 @@ xinput set-prop "USBest Technology SiS HID Touch Controller" --type=float "Coord
 
 ## Nodes
 
+The ROS computation graph (as visualised by [rqt_graph](http://wiki.ros.org/rqt_graph)) is as follows:
+
+
+![](doc/rosgraph.png)
+
+
 ### justhink_situation
 
 Launches a simple application to monitor mouse and key events in ROS2.
 Default size is 1920x1080, and the window is by default moved to the external screen.
-
-A screenshot from the window:
-
-
-<img src="doc/screenshot.png" width="480" />
-
-
-The ROS computation graph (as visualised by [rqt_graph](http://wiki.ros.org/rqt_graph)) is as follows:
-
-
-<img src="doc/rosgraph.png" width="480" />
 
 
 #### Subscribed Topics
@@ -213,7 +205,7 @@ None.
 #### Published Topics
 
 
-* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
+* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
 
 	Intended action of the agent/robot.
 	Use `A` key on the activity to publish on this topic.
@@ -230,7 +222,7 @@ None.
 			source install/local_setup.bash
 
 
-* **`/justhink_situation/drawing_change`** ([[justhink_interfaces/EdgeDrawing]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/EdgeDrawing.msg))
+* **`/justhink_situation/drawing_change`** ([[justhink_interfaces/EdgeDrawing]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/EdgeDrawing.msg))
 
 	Changes in the source or destination nodes of the temporarily drawn edges, with a header that contains a timestamp and an activity name. -1 indicates no source or destination node is selected (for `click` mode drawing) or dragged at (for `drag` mode drawing).
 
@@ -239,7 +231,7 @@ None.
 			ros2 topic echo /justhink_situation/drawing_change
 
 
-* **`mouse_motion`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
+* **`mouse_motion`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
 
 	Mouse movements that have position and button information, with a header that contains a timestamp and an activity name.
 
@@ -248,7 +240,7 @@ None.
 			ros2 topic echo /justhink_situation/mouse_motion
 
 
-* **`mouse_press`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
+* **`mouse_press`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
 
 	Mouse clicks that have position and button information, with a header that contains a timestamp and an activity name.
 
@@ -256,7 +248,7 @@ None.
 
 			ros2 topic echo /justhink_situation/mouse_press
 
-* **`mouse_drag`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
+* **`mouse_drag`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
 
 	Mouse drags that have position, position difference and mouse button information, with a header that contains a timestamp and an activity name.
 
@@ -264,7 +256,7 @@ None.
 
 			ros2 topic echo /justhink_situation/mouse_drag
 
-* **`mouse_release`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
+* **`mouse_release`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
 
 	Mouse releases that have position and button information, with a header that contains a timestamp and an activity name.
 
@@ -272,7 +264,7 @@ None.
 
 			ros2 topic echo /justhink_situation/mouse_release
 
-* **`key_press`** ([[justhink_interfaces/Key]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Key.msg))
+* **`key_press`** ([[justhink_interfaces/Key]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Key.msg))
 
 	Key presses on the keyboard that have the symbol and modifiers information, with a header that contains a timestamp and an activity name.
 
@@ -280,7 +272,7 @@ None.
 
 			ros2 topic echo /justhink_situation/key_press
 
-* **`key_release`** ([[justhink_interfaces/Key]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Key.msg))
+* **`key_release`** ([[justhink_interfaces/Key]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Key.msg))
 
 	Key releases on the keyboard that have the symbol and modifiers information, with a header that contains a timestamp and an activity name.
 
@@ -295,7 +287,7 @@ None.
 #### Subscribed Topics
 
 
-* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Action.msg))
+* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Action.msg))
 
 	Intended action of the agent/robot.
 	Use `A` key on the activity to publish on this topic.
@@ -316,7 +308,7 @@ None.
 #### Published Topics
 
 
-* **`intended_points`** ([[justhink_interfaces/PointDrawing]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/PointDrawing.msg))
+* **`intended_points`** ([[justhink_interfaces/PointDrawing]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/PointDrawing.msg))
 
 	Intended action from point in pixels to point in pixels of the agent/robot.
 	Use `A` key on the activity window to publish on topic`/justhink_situation/agent_intention`, which is converted by justhink_touch node to a point to point drawing intention that is published on this topic.
@@ -332,13 +324,16 @@ None.
 			cd ~/ros_ws
 			source install/local_setup.bash
 
+
+
+
 ## Acknowledgements
 
 This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 765955. Namely, the [ANIMATAS Project](https://www.animatas.eu/).
 
 ## Bugs & Feature Requests
 
-Please report bugs and request features using the [Issue Tracker](https://github.com/utku-norman/justhink_situation/issues).
+Please report bugs and request features using the [Issue Tracker](https://github.com/utku-norman/justhink-ros/issues).
 
 
 [ROS2]: http://www.ros.org
