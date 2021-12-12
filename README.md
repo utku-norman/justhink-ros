@@ -96,7 +96,7 @@ cd ~/ros_ws
 
 source /opt/ros/foxy/setup.bash
 
-colcon build --packages-up-to justhink_situation
+colcon build --packages-up-to justhink_touch
 
 . install/local_setup.bash
 ```
@@ -104,16 +104,81 @@ colcon build --packages-up-to justhink_situation
 
 ## Usage
 
+
+In a terminal, run the justhink_situation node with:
 ```
 cd ~/ros_ws
 
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
-export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
+# Do this once per terminal not to extend PYTHONPATH with the same entry.
+# export PYTHONPATH=$PYTHONPATH:/home/utku/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
+export PYTHONPATH=$PYTHONPATH:/home/utku/ros2_foxy/src/justhink-ros/venv/lib/python3.8/site-packages/
 
 ros2 run justhink_situation show_situation
 ```
+
+
+In another terminal, run the justhink_touch node with:
+```
+cd ~/ros_ws
+
+source /opt/ros/foxy/setup.bash
+source install/local_setup.bash
+
+export PYTHONPATH=$PYTHONPATH:/home/utku/ros2_foxy/src/justhink-ros/venv/lib/python3.8/site-packages/
+
+ros2 run justhink_touch convert_touch
+```
+
+
+### Running with a touch screen
+
+#### Mapping the touch interface onto the touch screen
+
+Check the name of the touch controller, e.g. "USBest Technology SiS HID Touch Controller"
+```
+xinput
+```
+
+2) Check the name of the screen, e.g. "DP-3"
+```
+xrandr -q
+```
+
+3) Map the touch controller to the screen, e.g., if it is DP-3 from the previous step:
+```
+xinput map-to-output "USBest Technology SiS HID Touch Controller" DP-3
+```
+
+#### Hiding the cursor on touch events
+
+Install the fork of unclutter that hides the cursor for touch only (The default unclutter from apt does not have "-touch".)
+```
+sudo apt install asciidoc libev-dev libxslt1-dev docbook-xsl xsltproc libxml2-utils    # Prerequisites
+git clone https://github.com/nowrep/unclutter-xfixes.git
+cd unclutter-xfixes
+make
+sudo make install
+```
+
+5) Run unclutter on a separate terminal. Touch on the screen will not show cursor.
+```
+unclutter -touch
+```
+
+#### Rotating the screen by 180 degrees
+To prevent the power button being pressed accidentally (normally bottom right corner, if rotated top left corner)
+
+1) In Display setting of Ubuntu, change Rotation to 180 degrees.
+
+2) Remap the touch upside-down.
+```
+xinput set-prop "USBest Technology SiS HID Touch Controller" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+```
+
+
 
 ## Nodes
 
@@ -157,6 +222,15 @@ None.
 
 			cd ~/ros_ws
 			source install/local_setup.bash
+
+
+* **`/justhink_situation/drawing_change`** ([[justhink_interfaces/EdgeDrawing]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/EdgeDrawing.msg))
+
+	Changes in the source or destination nodes of the temporarily drawn edges, with a header that contains a timestamp and an activity name. -1 indicates no source or destination node is selected (for `click` mode drawing) or dragged at (for `drag` mode drawing).
+
+	For example, one can monitor the mouse motion events with
+
+			ros2 topic echo /justhink_situation/drawing_change
 
 
 * **`mouse_motion`** ([[justhink_interfaces/Mouse]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Mouse.msg))
@@ -208,6 +282,49 @@ None.
 
 			ros2 topic echo /justhink_situation/key_release
 
+
+### justhink_touch
+
+
+#### Subscribed Topics
+
+
+* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/Action.msg))
+
+	Intended action of the agent/robot.
+	Use `A` key on the activity to publish on this topic.
+	Note that if you use `CTRL+A`, the action will also be executed directly.
+
+	For example, one can monitor the action with
+
+			ros2 topic echo /justhink_situation/agent_intention
+
+
+	If you encounter the error: `ModuleNotFoundError: No module named 'justhink_interfaces'`, make sure you source the workspace by:
+
+			cd ~/ros_ws
+			source install/local_setup.bash
+
+
+
+#### Published Topics
+
+
+* **`intended_points`** ([[justhink_interfaces/PointDrawing]](https://github.com/utku-norman/justhink-ros/justhink_interfaces/blob/main/msg/PointDrawing.msg))
+
+	Intended action from point in pixels to point in pixels of the agent/robot.
+	Use `A` key on the activity window to publish on topic`/justhink_situation/agent_intention`, which is converted by justhink_touch node to a point to point drawing intention that is published on this topic.
+	
+	(Note that if you use `CTRL+A`, the action will also be executed directly on the window.)
+
+	For example, one can monitor the topic with
+
+			ros2 topic echo /justhink_touch/intended_points
+
+	If you encounter the error: `ModuleNotFoundError: No module named 'justhink_interfaces'`, make sure you source the workspace by:
+
+			cd ~/ros_ws
+			source install/local_setup.bash
 
 ## Acknowledgements
 
