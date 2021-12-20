@@ -106,6 +106,7 @@ cd ~/ros_ws
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
+# Make sure the justhink_world Python package in the virtual environment path is being used.
 # Do this once per terminal not to extend PYTHONPATH with the same entry.
 export PYTHONPATH=$PYTHONPATH:/home/$USER/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
 
@@ -120,6 +121,7 @@ cd ~/ros_ws
 source /opt/ros/foxy/setup.bash
 source install/local_setup.bash
 
+# Make sure the justhink_world Python package in the virtual environment path is being used.
 export PYTHONPATH=$PYTHONPATH:/home/$USER/ros_ws/src/justhink-ros/venv/lib/python3.8/site-packages/
 
 ros2 run justhink_touch convert_touch
@@ -338,3 +340,4 @@ Please report bugs and request features using the [Issue Tracker](https://github
 
 [ROS2]: http://www.ros.org
 [justhink_world]: https://github.com/utku-norman/justhink_world
+[justhink-ros]: https://github.com/utku-norman/justhink-ros
