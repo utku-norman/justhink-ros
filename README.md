@@ -205,7 +205,7 @@ None.
 #### Published Topics
 
 
-* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Mouse.msg))
+* **`agent_intention`** ([[justhink_interfaces/Action]](https://github.com/utku-norman/justhink-ros/tree/ros2/justhink_interfaces/msg/Action.msg))
 
 	Intended action of the agent/robot.
 	Use `A` key on the activity to publish on this topic.
