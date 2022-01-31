@@ -1,0 +1,73 @@
+cd /home/qtrobot/robot/data/gestures
+ls -R
+
+
+.:
+epfl  QT
+
+./epfl:
+justhink  old_QT
+
+./epfl/justhink:
+cg.xml                             show_right_head_side_to_side.xml
+challenge_head_side_to_side.xml    so_head_side_to_side.xml
+curious_head_side_to_side.xml      swipe_left_head_side_to_side.xml
+hi_head.xml                        swipe_right_head_side_to_side.xml
+observe.xml                        thinking2.xml
+point_front_head_forward.xml       thinking.xml
+point_front_head_side_to_side.xml  up_left_head_side_to_side.xml
+show_left_head_side_to_side.xml    up_right_head_side_to_side.xml
+show_QT_head_down.xml
+
+./epfl/old_QT:
+adieu.xml               head_scratch.xml        show_right.xml
+angry.xml               hips.xml                show_tablet.xml
+begin.xml               hi.xml                  sneezing.xml
+bored_long.xml          hug.xml                 so_what.xml
+bored.xml               kiss.xml                so.xml
+breathing_exercise.xml  laugh.xml               stretch.xml
+bye-bye.xml             no.xml                  strong.xml
+bye.xml                 ohno.xml                surprise.xml
+challenge.xml           point_front.xml         swipe_left.xml
+come.xml                premiere_recontre.xml   swipe_right.xml
+cry.xml                 premiere_rencontre.xml  test.xml
+curious.xml             protect.xml             thanks.xml
+ecrit.xml               rappel.xml              up_left.xml
+fera_mieux.xml          sad.xml                 up_right.xml
+grandpa.xml             send_kiss.xml           yawn.xml
+handclap.xml            show_left.xml           yes.xml
+happy.xml               show_QT.xml
+
+./QT:
+angry.xml               kiss.xml               show_QT.xml
+bored.xml               monkey.xml             show_right.xml
+breathing_exercise.xml  neutral.xml            show_tablet.xml
+bye-bye.xml             one-arm-up.xml         sneezing.xml
+bye.xml                 peekaboo-back.xml      surprise.xml
+challenge.xml           peekaboo.xml           swipe_left.xml
+clapping.xml            personal-distance.xml  swipe_right.xml
+Dance                   point_front.xml        touch-head-back.xml
+drink.xml               Pretend-play           touch-head.xml
+emotions                sad.xml                train.xml
+happy.xml               send_kiss.xml          up_left.xml
+hi.xml                  Show-face.xml          up_right.xml
+imitation               show_left.xml          yawn.xml
+
+./QT/Dance:
+Dance-1-1.xml  Dance-2-1.xml  Dance-3-1.xml  Dance-4-2.xml  Dance-4-6.xml
+Dance-1-2.xml  Dance-2-2.xml  Dance-3-2.xml  Dance-4-3.xml
+Dance-1-3.xml  Dance-2-3.xml  Dance-3-3.xml  Dance-4-4.xml
+Dance-1-4.xml  Dance-2-4.xml  Dance-4-1.xml  Dance-4-5.xml
+
+./QT/emotions:
+afraid.xml  calm.xml       happy.xml  sad.xml  surprised.xml
+angry.xml   disgusted.xml  hoora.xml  shy.xml
+
+./QT/imitation:
+hands-on-belly-back.xml  hands-on-hip-back.xml  hands-up-back.xml
+hands-on-belly.xml       hands-on-hip.xml       hands-up.xml
+hands-on-head-back.xml   hands-side-back.xml    head-right-left.xml
+hands-on-head.xml        hands-side.xml         nodding-yes.xml
+
+./QT/Pretend-play:
+Beeping.xml  Beep.xml  Drive.xml  Driving.xml  Fly.xml  Phone_call.xml

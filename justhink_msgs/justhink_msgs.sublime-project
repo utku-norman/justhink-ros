@@ -1,0 +1,25 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+        }
+    ],
+    "settings":
+    {
+        "indent_style": 4,
+        "indent_size": 4,
+        "tab_size": 4
+    },
+    "build_systems":
+    [
+        {
+            "name": "catkin build",
+            "shell_cmd": "catkin build justhink_msgs"
+        },
+        {
+            "name": "list",
+            "shell_cmd": "ls -l"
+        }
+    ]
+}
