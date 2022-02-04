@@ -28,7 +28,7 @@ from .visual import RoboticAgentWindow
 from .tools import make_service_proxy
 
 
-___MODES___ = ['optimal', 'greedy', 'intentional']
+___MODES___ = ['optimal', 'greedy', 'aligning']
 
 
 def decision(probability):
@@ -64,11 +64,10 @@ class RoboticAgent(object):
         self.is_instructing = rospy.get_param(param_name, True)
         if rospy.has_param(param_name):
             rospy.delete_param(param_name)
-        # print()
         if self.is_instructing:
-            rospy.logwarn('Robot will introduce the next activity.')
+            rospy.logwarn('Robot will introduce the activity.')
         else:
-            rospy.logwarn('Robot will NOT introduce the next activity.')
+            rospy.logwarn('Robot will NOT introduce the activity.')
         print()
 
         param_name = '~lang'
@@ -76,8 +75,11 @@ class RoboticAgent(object):
         if rospy.has_param(param_name):
             rospy.delete_param(param_name)
 
-        # Explanation probability.
-        self.explain_prob = 0.5  # 1/3
+        # Set the hyperparameters
+        self.explain_prob = 0.5  # 1/3 # Explanation probability.
+        self.attrib_prob = 1.0  # 0.5  # 1/3 # Belief attribution probability.
+        self.l0_disagree_thres = 2  # max number of disagreements for L0
+        self.l1_disagree_thres = 1  # max number of disagreements for L1
 
         self.is_disagreeing = False
 
@@ -144,7 +146,41 @@ class RoboticAgent(object):
     # Action taking ###########################################################
 
     def construct_strategy_explanation(self, explanation, agent_cur_name):
-        expl_s = ''
+        if self.mode == 'greedy' or self.mode == 'aligning':
+            s = self.construct_greedy_explanation(explanation, agent_cur_name)
+            return s
+        elif self.mode == 'optimal':
+            s = self.construct_optimal_explanation(explanation, agent_cur_name)
+            return s
+        else:
+            raise ValueError
+
+    def construct_optimal_explanation(self, explanation, agent_cur_name):
+        state = self.cur_world.env.state
+
+        # best_count = len(explanation.best)
+        # other_count = len(explanation.others)
+
+        if state.network.subgraph.number_of_nodes() == 0:
+            base = agent_cur_name
+            if state.step_no == 1:
+                base = 'there'
+            options = [
+                'Because it is the cheapest from {}!'.format(base)
+            ]
+        else:
+            options = [
+                'Because it is the best connection, from those we connected!',
+                'Because it is the best choice, from which we already connected!',
+                'Because it is the cheapest from the mines we have connected!',
+            ]
+
+        s = random.choice(options)
+
+        return s
+
+    def construct_greedy_explanation(self, explanation, agent_cur_name):
+        # s = ''
         state = self.cur_world.env.state
 
         best_count = len(explanation.best)
@@ -180,7 +216,7 @@ class RoboticAgent(object):
                             base),
                     ]
 
-                expl_s = random.choice(options)
+                s = random.choice(options)
             else:   # 50% chance : to explanation.
                 nodes = {u for a in explanation.others for u in a.edge}
                 named_nodes = {state.network.get_node_name(u) for u in nodes}
@@ -188,10 +224,10 @@ class RoboticAgent(object):
                              for a in explanation.best for u in a.edge}
                 named_others = named_nodes.difference(excludeds)
                 if len(named_others) > 0:
-                    expl_s = 'Because it is better than going to {}.'.format(
-                        ' or '.join(named_others))
+                    s = 'Because it is better than going to {}.'.format(
+                        ', or '.join(named_others))
                 else:
-                    expl_s = 'Because there is nowhere else to go.'
+                    s = 'Because there is nowhere else to go.'
         elif isinstance(explanation, ConnectedExplanation):
             base = agent_cur_name
             options = [
@@ -200,12 +236,13 @@ class RoboticAgent(object):
                 'Because there is nowhere else to go.',
                 'Because we can not go anywhere else.',
             ]
-            expl_s = random.choice(options)
+            s = random.choice(options)
 
-        if self.is_instructing and state.step_no == 1:
-            expl_s = ''
+        # # TODO: check the need
+        # if self.is_instructing and state.step_no == 1:
+        #     s = ''
 
-        return expl_s
+        return s
 
     def act(self):
         """TODO: docstring for act"""
@@ -227,39 +264,94 @@ class RoboticAgent(object):
         expl_s = self.construct_strategy_explanation(
             explanation, agent_cur_name)
 
+        # Find the aligned actions the agent can take among available actions.
+        if self.mode == 'aligning':
+            my_beliefs = mental_state.beliefs['me']['world']
+            your_beliefs = mental_state.beliefs['me']['you']['world']
+            aligned_actions = list()
+            available_actions = world.agent.policy_model.get_all_actions()
+            # state) # TODO: check for bugs
+            for action in available_actions:
+                if isinstance(action, SuggestPickAction):
+                    u, v = action.edge
+                    if my_beliefs[u][v]['n_robot_agree'] > 0:
+                        aligned_actions.append(action)
+
+            # rospy.logwarn(available_actions)
+            # rospy.logwarn('aligned_actions = {}'.format(aligned_actions))
+            # rospy.logwarn('planned_action: {}'.format(planned_action))
+            # rospy.logwarn('edge: {}'.format(state.network.subgraph.edges()))
+
         # Decide on the action to take.
-        
-        # The robot has a plan to connect.
         if isinstance(planned_action, SuggestPickAction):
             # If there is no current suggestion: suggest according to strategy.
             if state.network.suggested_edge is None:
-                action = planned_action
-            # There is a current suggestion by the human: Agree or disagree.
+                if self.mode == 'aligning':
+                    # u, v = planned_action.edge
+                    # Prioritise taking an aligned action,
+                    # if possible from current node.
+                    cur_node = world.agent.cur_state.cur_node
+                    if planned_action not in aligned_actions \
+                            and len(aligned_actions) > 0:
+                        # Term the action as from the current node.
+                        action = aligned_actions[0]
+                        for a in aligned_actions:
+                            if a.edge[0] == cur_node:
+                                action = a
+                            break
+                    else:
+                        action = planned_action
+                else:
+                    action = planned_action
+
+            # There is a current suggestion by the human: Agree or Disagree.
             else:
                 suggested_edge = state.network.suggested_edge
                 planned_edge = planned_action.edge
+
                 agreable_edges = {planned_edge}
                 agreable_edges.add((planned_edge[-1], planned_edge[0]))
                 agreable_edges.update({a.edge for a in explanation.best})
                 agreable_edges.update(
                     {(a.edge[0], a.edge[1]) for a in explanation.best})
 
-                agent = self.cur_world.agent
-                prev_ms = agent.get_state(agent.state_no-1)
+                # agent = self.cur_world.agent
+                # prev_ms = agent.get_state(agent.state_no-1)
                 u, v = suggested_edge
-
-                # If I think so and you don't think so:
-                my_beliefs = prev_ms.beliefs['me']['world']
-                your_beliefs = prev_ms.beliefs['me']['you']['world']
-                is_mismatch = your_beliefs[u][v]['is_optimal'] == 1.0 \
-                    and my_beliefs[u][v]['is_optimal'] == 0.0
 
                 # Decide on whether to agree or not.
                 is_disagree = True
                 for edge in agreable_edges:
                     if set(suggested_edge) == set(edge):
                         is_disagree = False
-                if is_mismatch:
+
+                # Override disagree if aligned.
+                if self.mode == 'aligning' and my_beliefs[u][v]['is_aligned']:
+                    is_disagree = False
+
+                # Override disagree if forced agree (above disagree threshold).
+                is_forced_agree = False
+                if is_disagree:
+                    my_beliefs = mental_state.beliefs['me']['world']
+                    # your_beliefs = mental_state.beliefs['me']['you']['world']
+                    # # is_mismatch = your_beliefs[u][v]['is_optimal'] == 1.0 \
+                    # #     and my_beliefs[u][v]['is_optimal'] == 0.0
+
+                    n_disagree = my_beliefs[u][v]['n_robot_disagree']
+                    if self.mode == 'aligning':
+                        is_forced_agree = n_disagree >= self.l1_disagree_thres \
+                            and not my_beliefs[u][v]['is_aligned']
+                        if is_forced_agree:  # Now aligned.
+                            my_beliefs[u][v]['is_aligned'] = True
+                    else:
+                        is_forced_agree = n_disagree >= self.l0_disagree_thres
+                    if is_forced_agree:
+                        rospy.logwarn(
+                            'Forced agree = {} with {} as count = {} '.format(
+                                is_forced_agree,
+                                state.network.get_edge_name((u, v)),
+                                (u, v)))
+                if is_forced_agree:
                     is_disagree = False
 
                 # Disagree.
@@ -267,10 +359,10 @@ class RoboticAgent(object):
                     # To carry over to the next utterance.
                     self.is_disagreeing = True
                     action = DisagreeAction(agent=Agent.ROBOT)
-                # Agree due to mismatch.
-                elif is_mismatch:
-                    action = AgreeAction(agent=Agent.ROBOT)
-                # Agree with match.
+                # # Agree due to forced agree.
+                # elif is_forced_agree:
+                #     action = AgreeAction(agent=Agent.ROBOT)
+                # # Agree normally.
                 else:
                     action = AgreeAction(agent=Agent.ROBOT)
 
@@ -280,7 +372,7 @@ class RoboticAgent(object):
         # If I think so and you don't think so:
         try:
             if isinstance(action, SuggestPickAction):
-                u, v = world.env.state.network.get_edge_name(action.edge)
+                u, v = action.edge #world.env.state.network.get_edge_name(action.edge)
             else:
                 u, v = state.network.suggested_edge
             if world.agent.state_no > 1:  # It is not the very first action.
@@ -303,17 +395,23 @@ class RoboticAgent(object):
         # Enact the action.
         if isinstance(action, SuggestPickAction):
             # u, v = world.env.state.network.get_edge_name(action.edge)
-            next_name = u if u != agent_cur_name else v
-            edge_s = '{} to {}'.format(u, v)
+            u_name, v_name = world.env.state.network.get_edge_name((u, v))
+
+            next_name = u_name if u_name != agent_cur_name else v_name
+
+            # u_name, v_name = world.env.state.network.get_edge_name((u, v))
+            # edge_s = '{} to {}'.format(u, v)
+            edge_s = '{} to {}'.format(u_name, v_name)
 
             if self.is_disagreeing:
-                
 
                 options = [
                     ('Rather than that,'
                      ' I think {} is a correct choice.').format(edge_s),
                     ('Instead of that,'
                      ' I think {} is correct.').format(edge_s),
+                    ('Instead,'
+                     ' I think {} is a good one.').format(edge_s),
                     # 'I think we should rather pick {}.'.format(
                     #     edge_s),
                     # 'I think we should go from {} instead.'.format(
@@ -348,14 +446,17 @@ class RoboticAgent(object):
             # For the later suggestions.
             else:
                 common_s = ''
-                if self.mode == 'intentional':
-                    if is_match_correct:
-                        common_s = ' we both '
+                if self.mode == 'aligning':
+
+                    if is_match_correct or my_beliefs[u][v]['is_aligned']:
+                        common_s = 'we both '
 
                 options = [
                     "I think {}{} is correct.".format(
                         common_s, edge_s),
                     "I think {}{} is a correct choice.".format(
+                        common_s, edge_s),
+                    "I think {}{} is a good one.".format(
                         common_s, edge_s),
                     # "Let's pick {} to {}.".format(u, v),
                     # "Then, shall we go from {} to {}?".format(u, v),
@@ -364,8 +465,9 @@ class RoboticAgent(object):
                 s = random.choice(options)
                 s += ' Would you agree?'
 
-            if not self.is_disagreeing and decision(self.explain_prob) \
-                    and len(expl_s) > 0 and not self.mode == 'optimal':
+            # if not self.is_disagreeing and
+            if decision(self.explain_prob) and len(expl_s) > 0:
+                # and not self.mode == 'optimal':
                 s += '\n' + expl_s
 
             self.is_disagreeing = False
@@ -378,13 +480,19 @@ class RoboticAgent(object):
             self.say(s)
             self.express('point_human')
             self.emote('smile')
-            if decision(0.33):  # 33% chance
+            if decision(0.5):  # 55% chance
                 self.express('head_scratch', is_blocking=True)
             else:
-                rospy.sleep(1)
+                rospy.sleep(0.5)
+            self.home_head()
             self.execute_action(action)
 
         elif isinstance(action, DisagreeAction):
+            if decision(0.5):
+                u_name, v_name = world.env.state.network.get_edge_name((u, v))
+                edge_s = '{} to {}'.format(u_name, v_name)
+            else:
+                edge_s = 'it'
 
             # suggested_edge = state.network.suggested_edge
             # planned_edge = planned_action.edge
@@ -423,10 +531,16 @@ class RoboticAgent(object):
             # self.is_disagreeing = True
             # Decide what to say.
             options = [
-                "I disagree, I don’t think it is correct.",
+                "I disagree, I don’t think {} is correct.".format(edge_s),
+                "No, I don't think {} is a correct one.".format(edge_s),
+                "I disagree: I don't think {} is correct!",
+                "I don't think so! I don't think {} is correct!".format(
+                    edge_s),
+                "I don't think so! I don't think {} is a good one.".format(
+                    edge_s),
+                "I disagree with you! I don't think {} is a good one.".format(
+                    edge_s),
                 # "I disagree with you!",
-                # "I disagree.",
-                # "I don't think so!",
                 # "I don't think it is a good connection!",
                 # "I think we shouldn't do that.",
             ]
@@ -435,43 +549,64 @@ class RoboticAgent(object):
             if best_count == 1:
                 options = [
                     "There is a better option.",
-                    # "",
-                    # "",
                 ]
             else:
                 options = [
                     "There are better options.",
-                    # "There are better connections!",
+                    "There are better connections!",
+                    "There are better ones!",
+                    "We can choose better ones!",
                     # "There are cheaper ones!",
                 ]
-            if decision(self.explain_prob) and not self.mode == 'optimal':
-                # s += '\n' + random.choice(options)
-                s += ' ' + random.choice(options)
-                s += '\n' + expl_s
+            # if decision(self.explain_prob):
+            #     # and not self.mode == 'optimal':
+            #     # s += '\n' + random.choice(options)
+            #     s += ' ' + random.choice(options)
+            #     s += '\n' + expl_s
 
             # Enact disagreeing.
+            # rospy.sleep(0.2)
+            # self.home_head()
             self.express('no')
-            rospy.sleep(0.5)
-            self.home_head()
             self.say(s)
-            if decision(0.2):  # 20% chance
-                self.express('rappel')
-            elif decision(0.5):  # 40% chance overall
-                self.express('so')
             self.emote('smile')
-            rospy.sleep(2)
+            if decision(0.1):  # 20% chance
+                self.express('rappel')  # , is_blocking=True)
+            elif decision(0.25):  # 20% chance overall
+                self.express('so')  # , is_blocking=True)
+            # self.home_head()
+            rospy.sleep(0.2)  # 1.5
             self.execute_action(action)
 
         elif isinstance(action, AgreeAction):
-            # Agree due to mismatch.
-            if is_mismatch:
+            if decision(0.5):
+                u_name, v_name = world.env.state.network.get_edge_name((u, v))
+                edge_s = '{} to {}'.format(u_name, v_name)
+            else:
+                edge_s = 'it'
+            # # Agree due to mismatch.
+            # if is_mismatch:
+            if is_forced_agree:
                 # Decide what to say.
-                if self.mode == 'intentional':
-                    s = ''
+                if self.mode == 'aligning':
+                    options = [
+                        ("Okay, since you want it so much,"
+                         " I agree, I now think {} is correct too."
+                         "\nLet's connect them.".format(edge_s)),
+                        # "Okay, if you really want it so much.",
+                        # "Okay if you really want.",
+                        # "If you insist, okay.",
+                        # ("I see that you really want to connect them:"
+                        #     " fine."),
+                        # ("What can I say,"
+                        #  " if you want it so much! Okay."),
+                    ]
+                    s = random.choice(options)
                 else:
                     options = [
                         ("Okay, If you really want."
-                            " Still, I don’t think it is correct."),
+                            " Still, I don’t think {} is correct.").format(
+                            edge_s),
                         # "Okay, if you really want it so much.",
                         # "Okay if you really want.",
                         # "If you insist, okay.",
@@ -489,38 +624,54 @@ class RoboticAgent(object):
             # Agree with match.
             else:
                 common_s = ''
-                if self.mode == 'intentional':
-                    if is_match_correct:
+                if self.mode == 'aligning':
+                    if is_match_correct or my_beliefs[u][v]['is_aligned']:
                         common_s = 'we both '
-                options = [
-                    "I agree, I think that {}it is correct.".format(
-                        common_s),
-                    # "I agree with you!",
-                    # "I definitely agree!",
-                    # "I agree!",
-                    # "Okay, I think it is a good one too!",
-                    # "Definitely, that's a good choice!",
-                    # "Very well, let's connect them.",
-                ]
+                        options = [
+                            "You seem to believe that {} is correct, okay. I agree.".format( 
+                                edge_s),
+                            "You think {} is best. I agree with your belief.".format( 
+                                edge_s),
+                            # and I now think that you think it is correct too!
+                            # "I agree with you!",
+                            # "I definitely agree!",
+                            # "I agree!",
+                            # "Okay, I think it is a good one too!",
+                            # "Definitely, that's a good choice!",
+                            # "Very well, let's connect them.",
+                        ]
+                else:
+                    options = [
+                        "I agree, I think that {}it is correct.".format( 
+                            common_s),
+                        # and I now think that you think it is correct too!
+                        # "I agree with you!",
+                        # "I definitely agree!",
+                        # "I agree!",
+                        # "Okay, I think it is a good one too!",
+                        # "Definitely, that's a good choice!",
+                        # "Very well, let's connect them.",
+                    ]
                 s = random.choice(options)
 
-                if decision(self.explain_prob) and len(expl_s) > 0 \
-                        and not self.mode == 'optimal':
+                if decision(self.explain_prob) and len(expl_s) > 0:
+                    # and not self.mode == 'optimal':
                     s += '\n' + expl_s
 
                 gesture = 'yes'
 
-            # Enact agreeing or disagreeing.
+            # Enact agreeing.
             self.express(gesture)
-            rospy.sleep(0.5)
-            self.home_head()
             self.say(s)
-            if decision(0.2):  # 20% chance
-                self.express('rappel')
-            elif decision(0.5):  # 40% chance overall
-                self.express('so')
+            rospy.sleep(0.2)
+            self.home_head()
             self.emote('smile')
-            rospy.sleep(2)
+            if decision(0.2):  # 20% chance
+                self.express('rappel', is_blocking=True)
+            elif decision(0.5):  # 40% chance overall
+                self.express('so', is_blocking=True)
+            # rospy.sleep(1.5)
+            self.home_head()
             self.execute_action(action)
 
         elif isinstance(action, AttemptSubmitAction):
@@ -532,8 +683,9 @@ class RoboticAgent(object):
             self.home_head()
             self.say(s)
             self.express('point_human')
-            self.execute_action(action)
+            self.home_head()
             rospy.sleep(1)
+            self.execute_action(action)
 
     # Process state transition observations ###################################
 
@@ -704,6 +856,8 @@ class RoboticAgent(object):
             options = [
                 "I see, you think {} is correct.".format(
                     edge_s),
+                "Hmm, you think {} is a good one!".format(
+                    edge_s),
                 # "I see, you want to connect {}.".format(
                 #     edge_s),
                 # "Hmm, you would like to go from {}!".format(
@@ -716,6 +870,10 @@ class RoboticAgent(object):
             # Construct a sub-intentional utterance about the action.
             options = [
                 "I see, you choose {}.".format(
+                    edge_s),
+                "I see, you pick {}.".format(
+                    edge_s),
+                "Hmm, your choice is {}.".format(
                     edge_s),
             ]
             subintentional_s = random.choice(options)
@@ -730,7 +888,10 @@ class RoboticAgent(object):
                 prev_mental_state = agent.get_state(agent.state_no-1)
                 u, v = e = action.edge
                 u_name, v_name = world.env.state.network.get_edge_name(e)
-                edge_s = '{} to {}'.format(u_name, v_name)
+                if decision(0.5):
+                    edge_s = '{} to {}'.format(u_name, v_name)
+                else:
+                    edge_s = 'it'
 
                 beliefs = prev_mental_state.beliefs['me']['you']['world']
                 if beliefs[u][v]['is_optimal'] == 0.0:
@@ -738,16 +899,18 @@ class RoboticAgent(object):
                         'Oh, what a surprise!',
                         'Oh, really!',
                         'Oh, really?',
-                        'Surprising!',
+                        'Surprising!!',
                         'No way!',
                         'Really?',
                     ]
                     mismatch_s = random.choice(options)
                     options = [
-                        " I thought you didn't think"
+                        " I thought, you didn't think"
                         " {} was a correct choice!".format(edge_s),
-                        # " I thought you didn't think"
-                        # " it was a good choice!",
+                        " I thought, you didn't think"
+                        " {} was a good choice!".format(edge_s),
+                        " I thought, you didn't think"
+                        " {} was a good one!".format(edge_s),
                         # " I thought you didn't think "
                         # "we should connect them!",
                         # " I thought you didn't think"
@@ -755,9 +918,9 @@ class RoboticAgent(object):
                     ]
                     mismatch_s += random.choice(options)
 
-            if self.mode == 'intentional':
+            if self.mode == 'aligning':
                 # Make the mismatch utterance if not empty.
-                if len(mismatch_s) > 0 and decision(1.0):  # 100% chance
+                if len(mismatch_s) > 0 and decision(self.attrib_prob):
                     self.say(mismatch_s)
                     rospy.sleep(2)
 
@@ -769,10 +932,12 @@ class RoboticAgent(object):
             self.express(gesture)
 
             # Make the (sub)intentional utterance of action attribution.
-            if decision(0.33):  # 33% chance
-                if self.mode == 'intentional':
+            if decision(0.75):  # 50% chance
+                if self.mode == 'aligning':
                     self.say(intentional_s)
-                else:
+
+            if decision(0.5):  # 50% chance
+                if not self.mode == 'aligning':
                     self.say(subintentional_s)
 
             # Reset the head position.
@@ -781,7 +946,7 @@ class RoboticAgent(object):
         # React to agreement by the human.
         elif isinstance(action, AgreeAction):
 
-            # Make a facial expression.
+            # Make a gesture.
             self.express('happy')
 
             # Construct an utterance to respond the human's agreement.
@@ -808,14 +973,17 @@ class RoboticAgent(object):
                 s = random.choice(options)
 
                 # Make a belief attribution utterance if intentional robot.
-                if self.mode == 'intentional':
+                if self.mode == 'aligning':
                     options = [
-                        "Then, you think it is the right connection.",
-                        "Then, you think it is a correct choice.",
-                        "So, you think it is the right one.",
-                        "So, you think we should do that too.",
+                        "Then, we both think it is a good connection.",
+                        "Then, we both think it is a correct choice.",
+                        "So, we both think it is a correct one.",
+                        # "Then, you think it is the right connection.",
+                        # "Then, you think it is a correct choice.",
+                        # "So, you think it is the right one.",
+                        # "So, you think we should do that too.",
                     ]
-                    if decision(0.25):  # 25% chance
+                    if decision(self.attrib_prob):
                         s += ' ' + random.choice(options)
 
                 options = [
@@ -869,9 +1037,9 @@ class RoboticAgent(object):
                     ]
                     mismatch_s += random.choice(options)
 
-            if self.mode == 'intentional':
+            if self.mode == 'aligning':
                 # Make the mismatch utterance if not empty.
-                if len(mismatch_s) > 0 and decision(1.0):  # 100% chance
+                if len(mismatch_s) > 0 and decision(self.attrib_prob):
                     self.say(mismatch_s)
                     rospy.sleep(2)
 
@@ -933,8 +1101,16 @@ class RoboticAgent(object):
                     ]
                     mismatch_s = random.choice(options)
                     options = [
-                        " I thought you thought"
-                        " {} was a correct choice!".format(),
+                        " Didn't you think"
+                        " {} was a correct choice?".format(edge_s),
+                        " Didn't you believe"
+                        " {} was a good one?".format(edge_s),
+                        " I thought you believed"
+                        " {} was a correct choice!".format(edge_s),
+                        # " I believed you thought"
+                        # " {} was a good one!".format(edge_s),
+                        # " I thought you thought"
+                        # " {} was a correct choice!".format(edge_s),
                         # " I thought you thought"
                         # " it was a good choice!",
                         # " I thought you choice "
@@ -953,32 +1129,43 @@ class RoboticAgent(object):
             s = random.choice(options)
 
             # Attribute belief if intentional robot.
-            if self.mode == 'intentional':
+            if self.mode == 'aligning':
                 options = [
-                    ("Then I think that you don't think"
+                    #  Then, I think ,
+                    ("Then you don't think"
                         " it is a good connection."),
-                    "Then, I think that you don't think it is correct.",
-                    ("Then, I think that you don't think"
+                    "Then, you don't think it is correct.",
+                    ("Then, you don't think"
                         " it is a correct choice."),
-                    "Then, I think that you don't think it is a good one.",
-                    "Then I think that you think it is a wrong one.",
+                    "Then, I think, that you don't think it is a good one.",
+                    "Then I think, that you think it is a wrong one.",
                 ]
-                if decision(0.5):  # 50% chance
+                if decision(self.attrib_prob):
                     s += ' ' + random.choice(options)
-
+            else:
+                options = [
+                    "Okay, you disagree.",
+                    "I see you do not agree.",
+                    "Okay, you do not agree.",
+                ]
+                s = random.choice(options)
+   
             # Ask for the next action.
             options = [
                 # "Then, what do you think we should do?",
-                "Then, what shall we do?",
-                "What would you like to do, then?",
                 "Then, what is best to do now?",
+                "Then, what shall we do?",
+                "Then, what should we do now?",
+                "What would you like to do, then?",
+                "Then, what should we do?",
+                "Then, what would yo like to do?",
                 "So, what should we do now?",
             ]
             s += '\n' + random.choice(options)
 
-            if self.mode == 'intentional':
+            if self.mode == 'aligning':
                 # Make the mismatch utterance if not empty.
-                if len(mismatch_s) > 0 and decision(1.0):  # 100% chance
+                if len(mismatch_s) > 0 and decision(self.attrib_prob):
                     self.say(mismatch_s)
                     rospy.sleep(2)
 
@@ -995,14 +1182,14 @@ class RoboticAgent(object):
             options = [
                 ("Oh I see you want to start connecting again."
                  "\nOkay, please go ahead!"),
-                "Okay, let's start again.",
+                "Okay, let's start again. Go ahead!",
             ]
             self.say(random.choice(options))
 
         # React to attempting to submit.
         elif isinstance(action, AttemptSubmitAction):
             # Make an acknowledgement utterance.
-            if self.mode == 'intentional':
+            if self.mode == 'aligning':
                 options = [
                     ('I see that you think we are done,'
                      ' and you want to submit.'),
@@ -1270,6 +1457,13 @@ class RoboticAgent(object):
                  "all the gold mines to each other\nso that miners can go"
                  " from any mine to any other mine by some path!")
             self.say(s)
+
+            # Connectedess constraint.
+            self.express('point_activity')
+            s = ("You can only build from the ones you have connected,"
+                 " after you start")
+            self.say(s)
+            delay = 1 if self.with_robot else 3
 
             # Motivate and signal for the upcoming collaborative activity.
             delay = 1 if self.with_robot else 3
@@ -1559,11 +1753,11 @@ class RoboticAgent(object):
         return resp
 
     def home_head(self):
-        """TODO: docstring"""
+        """TODO: docstring for home_head"""
         if self.with_robot:
             data = ['HeadPitch']
             log_service_call(self.call_home, data)
-            self.log_emote_pub.publish('home_head_via_service')
+            self.log_express_pub.publish('home_head_via_service')
             try:
                 self.call_home(data)
             except Exception as e:

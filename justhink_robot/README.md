@@ -112,9 +112,10 @@ You can check if the QTroot ROS setup works by:
 ```
 # Testing topics
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
-rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/hi'" 	# or e.g. QT/happy
+rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/hi'" 	# or e.g. QT/emotions/happy
 rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/Dance/Dance-1-1'"
 rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/yes'"
+
 
 
 rostopic pub -1 /qt_robot/head_position/command std_msgs/Float64MultiArray "data: [0, -15]"   # head up
@@ -227,6 +228,30 @@ rosservice call /qt_robot/gesture/play 'epfl/justhink/point_front_head_forward' 
 rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/justhink/point_front_head_forward'"
 rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/no'"
 rosservice call /qt_robot/gesture/play 'QT/show_tablet' 1
+
+
+
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-1' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-2' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-3' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-4' 1
+
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-2-1' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-2-2' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-2-3' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-2-4' 1
+
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-3-1' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-3-2' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-3-3' 1
+
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-1' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-2' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-3' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-4' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-5' 1
+rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-4-6' 1
+
 ```
 
 

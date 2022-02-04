@@ -273,7 +273,7 @@ class PhysicalRobot(object):
         rospy.loginfo('Replying home request: {}'.format(data))
         # resp = self.call_home(data.parts)
         if 'HeadPitch' in data.parts:
-            data = [0, 10]
+            data = [0, 10]  # 10] 12]
             self.head_pos_pub.publish(data=data)
             log_publish(self.head_pos_pub, data)
             rospy.sleep(1)

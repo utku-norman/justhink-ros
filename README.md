@@ -98,13 +98,22 @@ source devel/setup.bash
 
 ## Usage
 
-3) (optional) In another terminal, start logging:
+1) (optional) Set the volume level of the robot.
+```
+rosservice call /qt_robot/setting/setVolume 52    # for development
+rosservice call /qt_robot/setting/setVolume 75    # for experiment
+
+# Test
+rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
+```
+
+2) (optional) In another terminal, start logging:
 ```
 NO=1 # Student No
 rosrun justhink_robot run_recorder.sh $NO
 ```
 
-4) In another terminal, start the robot node:
+3) In another terminal, start the robot node:
 ```
 # JUSTHINK_WORLD_DIR points to the location of the justhink_world source code.
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
@@ -113,9 +122,12 @@ export ROS_LOG_DIR=$(rospack find justhink_robot)/data/log
 rm $ROS_LOG_DIR/agent_embodiment.log
 export ROS_NAMESPACE=agent
 rosrun justhink_robot run_robot.py
+
+# Test
+rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
 ```
 
-5) In another terminal, start the agent node:
+4) In another terminal, start the agent node:
 ```
 # JUSTHINK_WORLD_DIR points to the location of the justhink_world source code.
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
@@ -124,15 +136,15 @@ export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
 rm $ROS_LOG_DIR/agent_cognition.log
 export ROS_NAMESPACE=agent
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=greedy
+rosrun justhink_agent run_agent.py _instruct:=False _mode:=optimal
+rosrun justhink_agent run_agent.py _instruct:=False _mode:=aligning
 
 
 rosrun justhink_agent run_agent.py _instruct:=True
 
-rosrun justhink_agent run_agent.py _instruct:=False _mode:=optimal
-rosrun justhink_agent run_agent.py _instruct:=False _mode:=intentional
 ```
 
-6) In another terminal, start the situation node.
+5) In another terminal, launch the learning scenario by running the situation node.
 ```
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
