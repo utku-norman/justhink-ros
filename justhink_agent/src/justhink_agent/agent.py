@@ -171,7 +171,8 @@ class RoboticAgent(object):
         else:
             options = [
                 'Because it is the best connection, from those we connected!',
-                'Because it is the best choice, from which we already connected!',
+                'Because it is the best choice,'
+                ' from which we already connected!',
                 'Because it is the cheapest from the mines we have connected!',
             ]
 
@@ -372,7 +373,8 @@ class RoboticAgent(object):
         # If I think so and you don't think so:
         try:
             if isinstance(action, SuggestPickAction):
-                u, v = action.edge #world.env.state.network.get_edge_name(action.edge)
+                u, v = action.edge 
+                # world.env.state.network.get_edge_name(action.edge)
             else:
                 u, v = state.network.suggested_edge
             if world.agent.state_no > 1:  # It is not the very first action.
@@ -380,14 +382,15 @@ class RoboticAgent(object):
                 my_beliefs = prev_ms.beliefs['me']['world']
                 your_beliefs = prev_ms.beliefs['me']['you']['world']
 
-                is_mismatch = your_beliefs[u][v]['is_optimal'] == 1.0 \
-                    and my_beliefs[u][v]['is_optimal'] == 0.0
+                # is_mismatch = your_beliefs[u][v]['is_optimal'] == 1.0 \
+                #     and my_beliefs[u][v]['is_optimal'] == 0.0
                 is_match_correct = your_beliefs[u][v]['is_optimal'] == 1.0 \
                     and my_beliefs[u][v]['is_optimal'] == 1.0
-                # is_match_incorrect = your_beliefs[u][v]['is_optimal'] == 0.0 \
+                # is_match_incorrect = \
+                #      your_beliefs[u][v]['is_optimal'] == 0.0 \
                 #     and my_beliefs[u][v]['is_optimal'] == 0.0
         except Exception as e:
-            is_mismatch = False
+            # is_mismatch = False
             is_match_correct = False
             # is_match_incorrect = False
             print(e)
@@ -424,7 +427,8 @@ class RoboticAgent(object):
                     #  ' what about going from {}?').format(edge_s),
                 ]
                 s = random.choice(options)
-                s += ' Would you agree?'
+                if decision(0.7):
+                    s += ' Would you agree?'
 
             # If the very first suggestion.
             elif state.step_no == 1:
@@ -439,8 +443,15 @@ class RoboticAgent(object):
                         agent_cur_name, next_name)
                 # Not instructing or the first of second activity.
                 else:
-                    s = "Let's start from {}. Shall we go to {}?".format(
-                        agent_cur_name, next_name)
+                    if self.mode == 'intentional':
+                        s = ("Let's start from {}. What do you think?"
+                             "Shall we go to {}?").format(
+                            agent_cur_name, next_name)
+                    else:
+                        s = ("Let's start from {}."
+                             " I think going to {} is a good choice."
+                             " Do you agree?").format(
+                                agent_cur_name, next_name)
                     # s += "I think that one is a correct choice."
 
             # For the later suggestions.
@@ -463,7 +474,8 @@ class RoboticAgent(object):
                     # "Umm, what about from {} to {}?".format(u, v),
                 ]
                 s = random.choice(options)
-                s += ' Would you agree?'
+                if decision(0.7):
+                    s += ' Would you agree?'
 
             # if not self.is_disagreeing and
             if decision(self.explain_prob) and len(expl_s) > 0:
@@ -475,16 +487,16 @@ class RoboticAgent(object):
             # Enact suggesting.
             self.help_text = self.agreement_help_text
             self.express('point_self')
-            self.home_head()
             rospy.sleep(0.5)
+            self.home_head()
             self.say(s)
             self.express('point_human')
             self.emote('smile')
-            if decision(0.5):  # 55% chance
+            self.home_head()
+            if decision(0.5):  # 50% chance
                 self.express('head_scratch', is_blocking=True)
             else:
                 rospy.sleep(0.5)
-            self.home_head()
             self.execute_action(action)
 
         elif isinstance(action, DisagreeAction):
@@ -530,16 +542,18 @@ class RoboticAgent(object):
             # To carry over to the next utterance.
             # self.is_disagreeing = True
             # Decide what to say.
+            verb = 'think' if decision(0.5) else 'believe'
             options = [
-                "I disagree, I don’t think {} is correct.".format(edge_s),
-                "No, I don't think {} is a correct one.".format(edge_s),
-                "I disagree: I don't think {} is correct!",
-                "I don't think so! I don't think {} is correct!".format(
-                    edge_s),
-                "I don't think so! I don't think {} is a good one.".format(
-                    edge_s),
-                "I disagree with you! I don't think {} is a good one.".format(
-                    edge_s),
+                # "I disagree, I don’t think {} is correct.".format(edge_s),
+                "I don’t {} {} is correct, so I disagree.".format(
+                    verb, edge_s),
+                "No, I don't {} {} is a correct one.".format(
+                    verb, edge_s),
+                "I don't {} {} is correct! I disagree.".format(verb, edge_s),
+                "No! I don't {} {} is correct!".format(
+                    verb, edge_s),
+                "I don't {} {} is a good one. I disagree with you!".format(
+                    verb, edge_s),
                 # "I disagree with you!",
                 # "I don't think it is a good connection!",
                 # "I think we shouldn't do that.",
@@ -555,8 +569,7 @@ class RoboticAgent(object):
                     "There are better options.",
                     "There are better connections!",
                     "There are better ones!",
-                    "We can choose better ones!",
-                    # "There are cheaper ones!",
+                    # "We can choose better ones!",
                 ]
             # if decision(self.explain_prob):
             #     # and not self.mode == 'optimal':
@@ -604,14 +617,14 @@ class RoboticAgent(object):
                     s = random.choice(options)
                 else:
                     options = [
-                        ("Okay, If you really want."
-                            " Still, I don’t think {} is correct.").format(
+                        ("I really don’t think {} is correct."
+                         "Fine, since you insist so much!").format(
                             edge_s),
-                        # "Okay, if you really want it so much.",
                         # "Okay if you really want.",
                         # "If you insist, okay.",
-                        # ("I see that you really want to connect them:"
-                        #     " fine."),
+                        ("I see that you really want to connect them:"
+                            " fine. I still don’t think {} is correct.".format(
+                                edge_s)),
                         # ("What can I say,"
                         #  " if you want it so much! Okay."),
                     ]
@@ -642,7 +655,14 @@ class RoboticAgent(object):
                         ]
                 else:
                     options = [
-                        "I agree, I think that {}it is correct.".format( 
+                        "I think that {}it is correct, so I agree.".format( 
+                            common_s),
+                        "I think that {}it good, then, I agree.".format( 
+                            common_s),
+                        "I believe {}it is a good one, so I agree.".format( 
+                            common_s),
+                        ("I believe {}it is a good choice, then,"
+                         " I agree.").format( 
                             common_s),
                         # and I now think that you think it is correct too!
                         # "I agree with you!",
@@ -854,10 +874,8 @@ class RoboticAgent(object):
 
             # Construct an intentional utterance about the action.
             options = [
-                "I see, you think {} is correct.".format(
-                    edge_s),
-                "Hmm, you think {} is a good one!".format(
-                    edge_s),
+                "I see, you think {} is correct.".format(edge_s),
+                "Hmm, you think {} is a good one!".format(edge_s),
                 # "I see, you want to connect {}.".format(
                 #     edge_s),
                 # "Hmm, you would like to go from {}!".format(
@@ -869,10 +887,8 @@ class RoboticAgent(object):
 
             # Construct a sub-intentional utterance about the action.
             options = [
-                "I see, you choose {}.".format(
-                    edge_s),
-                "I see, you pick {}.".format(
-                    edge_s),
+                "I see, you choose {}.".format(edge_s),
+                "I see, you pick {}.".format(edge_s),
                 "Hmm, your choice is {}.".format(
                     edge_s),
             ]
@@ -971,6 +987,12 @@ class RoboticAgent(object):
                     "Great, you agree with me!",
                 ]
                 s = random.choice(options)
+                if decision(0.5):
+                    options = [
+                        "Then they are connected.",
+                        "They are connected now.",
+                    ]
+                    s += random.choice(options)             
 
                 # Make a belief attribution utterance if intentional robot.
                 if self.mode == 'aligning':
@@ -1149,7 +1171,7 @@ class RoboticAgent(object):
                     "Okay, you do not agree.",
                 ]
                 s = random.choice(options)
-   
+
             # Ask for the next action.
             options = [
                 # "Then, what do you think we should do?",

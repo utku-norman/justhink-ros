@@ -107,7 +107,7 @@ rosservice call /qt_robot/setting/setVolume 75    # for experiment
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
 ```
 
-2) (optional) In another terminal, start logging:
+2) (optional) In a terminal start logging:
 ```
 NO=1 # Student No
 rosrun justhink_robot run_recorder.sh $NO
@@ -151,10 +151,10 @@ source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 export ROS_LOG_DIR=$(rospack find justhink_scenario)/data/log
 rm $ROS_LOG_DIR/env_situation.log
 export ROS_NAMESPACE=env
-rosrun justhink_scenario run_scenario.py _robot_text:=True
-
 
 rosrun justhink_scenario run_scenario.py
+
+rosrun justhink_scenario run_scenario.py _robot_text:=True
 
 ```
 

@@ -209,7 +209,7 @@ class AppWindow(pyglet.window.Window):
             self._is_animating = True
             # pyglet.clock.unschedule(self.animate_transition)
             pyglet.clock.schedule(self.animate_transition, name=name)
-            self.graphics.help_button.set_state(ButtonWidget.DISABLED)
+            # self.graphics.help_button.set_state(ButtonWidget.DISABLED)
         else:
             # Publish the activity change if shift is not pressed.
             if not self._is_shift:
@@ -261,19 +261,19 @@ class AppWindow(pyglet.window.Window):
                             service_name))
                         rospy.loginfo('Ignoring repeat speech press.')
 
-            # Process help button.
-            if self.graphics.help_button.state == ButtonWidget.ENABLED:
-                service_name = '/agent/cognition/request_help'
-                if self.graphics.help_button.check_hit(x, y):
-                    if service_name in rosservice.get_service_list():
-                        self.graphics.help_button.set_state(
-                            ButtonWidget.SELECTED)
-                        pyglet.clock.schedule_once(
-                            self._robot_help_callback, 1)
-                    else:
-                        rospy.loginfo('Service {} not found'.format(
-                            service_name))
-                        rospy.loginfo('Ignoring help button press.')
+            # # Process help button.
+            # if self.graphics.help_button.state == ButtonWidget.ENABLED:
+            #     service_name = '/agent/cognition/request_help'
+            #     if self.graphics.help_button.check_hit(x, y):
+            #         if service_name in rosservice.get_service_list():
+            #             self.graphics.help_button.set_state(
+            #                 ButtonWidget.SELECTED)
+            #             pyglet.clock.schedule_once(
+            #                 self._robot_help_callback, 1)
+            #         else:
+            #             rospy.loginfo('Service {} not found'.format(
+            #                 service_name))
+            #             rospy.loginfo('Ignoring help button press.')
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.publish_mouse_drag(x, y, buttons, dx=dx, dy=dy)
@@ -460,19 +460,19 @@ class AppWindow(pyglet.window.Window):
         graphics.repeat_button = button
         graphics.buttons['repeat'] = button
 
-        # Create the help button.
-        button_pads, scale = (100, 180), 0.2
-        paths = {
-            ButtonWidget.ENABLED: c.joinpath('help_enabled.png'),
-            ButtonWidget.DISABLED: c.joinpath('help_disabled.png'),
-            ButtonWidget.SELECTED: c.joinpath('help_selected.png'),
-        }
-        button = ButtonWidget(
-            x=button_pads[0], y=height-button_pads[1], paths=paths,
-            state=ButtonWidget.DISABLED, scale=scale, batch=batch,
-            group=groups[1])
-        graphics.help_button = button
-        graphics.buttons['help'] = button
+        # # Create the help button.
+        # button_pads, scale = (100, 180), 0.2
+        # paths = {
+        #     ButtonWidget.ENABLED: c.joinpath('help_enabled.png'),
+        #     ButtonWidget.DISABLED: c.joinpath('help_disabled.png'),
+        #     ButtonWidget.SELECTED: c.joinpath('help_selected.png'),
+        # }
+        # button = ButtonWidget(
+        #     x=button_pads[0], y=height-button_pads[1], paths=paths,
+        #     state=ButtonWidget.DISABLED, scale=scale, batch=batch,
+        #     group=groups[1])
+        # graphics.help_button = button
+        # graphics.buttons['help'] = button
 
         self.graphics = graphics
 
@@ -609,7 +609,7 @@ class AppWindow(pyglet.window.Window):
         try:
             self.update_robot_text(data.text)
             self.graphics.repeat_button.set_state(ButtonWidget.ENABLED)
-            self.graphics.help_button.set_state(ButtonWidget.ENABLED)
+            # self.graphics.help_button.set_state(ButtonWidget.ENABLED)
             resp = True
         except Exception as e:
             rospy.logerr(e)
@@ -648,7 +648,7 @@ class AppWindow(pyglet.window.Window):
         resp = self.request_help_service()
         log_service_response(self.request_help_service, None, resp)
 
-        self.graphics.help_button.set_state(ButtonWidget.ENABLED)
+        # self.graphics.help_button.set_state(ButtonWidget.ENABLED)
 
     def make_mouse_message(self, x, y, buttons=mouse.LEFT, dx=0, dy=0):
         self.mouse_message.header.frame_id = self.cur_scene_name

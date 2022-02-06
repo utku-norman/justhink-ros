@@ -48,9 +48,9 @@ class WelcomeScene(Scene):
         robot_text_height = win.graphics.robot_text_rect.height
         in_robot_text = y > win.graphics.height - robot_text_height
 
-        in_help_button = win.graphics.help_button.check_hit(x, y)
+        # in_help_button = win.graphics.help_button.check_hit(x, y)
 
-        if not in_robot_text and not in_help_button:
+        if not in_robot_text:  # and not in_help_button:
             win.scene_no = win.scene_no + 1
 
 

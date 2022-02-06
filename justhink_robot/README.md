@@ -230,7 +230,6 @@ rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/no'"
 rosservice call /qt_robot/gesture/play 'QT/show_tablet' 1
 
 
-
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-1' 1
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-2' 1
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-3' 1
