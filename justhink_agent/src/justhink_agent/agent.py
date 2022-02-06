@@ -679,7 +679,7 @@ class RoboticAgent(object):
                         options = [
                             "{}{}it is correct, so, I agree.".format( 
                                 me, common_s),
-                            "{}{}it good, then, I agree.".format( 
+                            "{}{}it is good one, then, I agree.".format( 
                                 me, common_s),
                             ("{}{}it is a good one,"
                              " therefore, I agree.").format( 
