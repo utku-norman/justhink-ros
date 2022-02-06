@@ -472,7 +472,9 @@ class RoboticAgent(object):
                 if self.mode == 'aligning':
 
                     if is_match_correct or my_beliefs[u][v]['is_aligned']:
-                        common_s = 'we both '
+                        # common_s = 'we both '
+                        verb = 'think' if decision(0.5) else 'believe'
+                        common_s = 'we both {} '.format(verb)
 
                 verb = 'think' if decision(0.5) else 'believe'
                 options = [
