@@ -95,6 +95,11 @@ catkin build justhink_robot
 source devel/setup.bash
 ```
 
+If you encounter error ``catkin not found'', install it by:
+```
+sudo apt-get install python3-catkin-tools
+```
+
 
 ## Usage
 
