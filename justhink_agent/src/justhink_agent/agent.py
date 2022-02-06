@@ -654,7 +654,7 @@ class RoboticAgent(object):
                 common_s = ''
                 verb = 'think' if decision(0.5) else 'believe'
                 if self.mode == 'aligning':
-                    common_s = 'we both '
+                    common_s = 'we both {} '.format(verb)
                     if (is_match_correct or my_beliefs[u][v]['is_aligned']):
                         options = [
                             ("You seem to {} that {} is correct, okay."
@@ -675,6 +675,7 @@ class RoboticAgent(object):
                             # "Very well, let's connect them.",
                         ]
                     else:
+                        
                         me = 'I {} that '.format(verb) if decision(0.4) else ''
                         options = [
                             "{}{}it is correct, so, I agree.".format( 
