@@ -220,7 +220,7 @@ rosservice call /qt_robot/behavior/talkText "message: 'Hi.'"
 
 rosservice call /qt_robot/gesture/play 'epfl/justhink/show_QT_head_down' 1
 rosservice call /qt_robot/motors/home ['HeadPitch'] # Home head
-rosservice call /qt_robot/motors/home "['HeadPitch', 'left_arm', 'right_arm']"  # Home all
+rosservice call /qt_robot/motors/home "['HeadPitch', 'HeadYaw', 'left_arm', 'right_arm']"  # Home all
 
 rosservice call /qt_robot/gesture/play 'epfl/justhink/point_front_head_forward' 1
 

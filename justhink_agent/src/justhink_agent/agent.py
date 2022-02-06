@@ -13,7 +13,8 @@ import justhink_msgs.srv
 
 from justhink_world import create_all_worlds
 from justhink_world.domain.action import SuggestPickAction, \
-    AgreeAction, DisagreeAction, ClearAction, SubmitAction, AttemptSubmitAction
+    AgreeAction, DisagreeAction, ClearAction, \
+    SubmitAction, AttemptSubmitAction, ContinueAction
 from justhink_world.domain.observation import Observation
 from justhink_world.agent import Agent
 from justhink_world.agent.reasoning import BetterThanExplanation, \
@@ -116,7 +117,7 @@ class RoboticAgent(object):
         # Configure the robot speech.
         if self.with_robot:
             try:
-                opts = {'speed': 82, 'language': self.lang}
+                opts = {'speed': 80, 'language': self.lang}
                 resp = self.call_configure_speech(**opts)
                 if resp.status:
                     s = 'Robot speech configured: speed={}, lang={}'.format(
@@ -368,12 +369,15 @@ class RoboticAgent(object):
                     action = AgreeAction(agent=Agent.ROBOT)
 
         elif isinstance(planned_action, AttemptSubmitAction):
-            action = AttemptSubmitAction(agent=Agent.ROBOT)
+            if state.is_submitting:
+                action = ContinueAction(agent=Agent.ROBOT)
+            else:
+                action = AttemptSubmitAction(agent=Agent.ROBOT)
 
         # If I think so and you don't think so:
         try:
             if isinstance(action, SuggestPickAction):
-                u, v = action.edge 
+                u, v = action.edge
                 # world.env.state.network.get_edge_name(action.edge)
             else:
                 u, v = state.network.suggested_edge
@@ -407,14 +411,14 @@ class RoboticAgent(object):
             edge_s = '{} to {}'.format(u_name, v_name)
 
             if self.is_disagreeing:
-
+                verb = 'think' if decision(0.5) else 'believe'
                 options = [
                     ('Rather than that,'
-                     ' I think {} is a correct choice.').format(edge_s),
+                     ' I {} {} is a correct choice.').format(verb, edge_s),
                     ('Instead of that,'
-                     ' I think {} is correct.').format(edge_s),
+                     ' I {} {} is correct.').format(verb, edge_s),
                     ('Instead,'
-                     ' I think {} is a good one.').format(edge_s),
+                     ' I {} {} is a good one.').format(verb, edge_s),
                     # 'I think we should rather pick {}.'.format(
                     #     edge_s),
                     # 'I think we should go from {} instead.'.format(
@@ -428,7 +432,14 @@ class RoboticAgent(object):
                 ]
                 s = random.choice(options)
                 if decision(0.7):
-                    s += ' Would you agree?'
+                    if self.mode == 'aligning':
+                        options = [
+                            ' What do you think?',
+                            ' Would you agree?',
+                        ]
+                        s += random.choice(options)
+                    else:
+                        s += ' Would you agree?'
 
             # If the very first suggestion.
             elif state.step_no == 1:
@@ -443,15 +454,16 @@ class RoboticAgent(object):
                         agent_cur_name, next_name)
                 # Not instructing or the first of second activity.
                 else:
-                    if self.mode == 'intentional':
+                    if self.mode == 'aligning':
                         s = ("Let's start from {}. What do you think?"
-                             "Shall we go to {}?").format(
+                             " Shall we go to {}?").format(
                             agent_cur_name, next_name)
                     else:
+                        verb = 'think' if decision(0.5) else 'believe'
                         s = ("Let's start from {}."
-                             " I think going to {} is a good choice."
+                             " I {} going to {} is a good choice."
                              " Do you agree?").format(
-                                agent_cur_name, next_name)
+                                agent_cur_name, verb, next_name)
                     # s += "I think that one is a correct choice."
 
             # For the later suggestions.
@@ -462,13 +474,14 @@ class RoboticAgent(object):
                     if is_match_correct or my_beliefs[u][v]['is_aligned']:
                         common_s = 'we both '
 
+                verb = 'think' if decision(0.5) else 'believe'
                 options = [
-                    "I think {}{} is correct.".format(
-                        common_s, edge_s),
-                    "I think {}{} is a correct choice.".format(
-                        common_s, edge_s),
-                    "I think {}{} is a good one.".format(
-                        common_s, edge_s),
+                    "I {} {}{} is correct.".format(
+                        verb, common_s, edge_s),
+                    "I {} {}{} is a correct choice.".format(
+                        verb, common_s, edge_s),
+                    "I {} {}{} is a good one.".format(
+                        verb, common_s, edge_s),
                     # "Let's pick {} to {}.".format(u, v),
                     # "Then, shall we go from {} to {}?".format(u, v),
                     # "Umm, what about from {} to {}?".format(u, v),
@@ -478,7 +491,8 @@ class RoboticAgent(object):
                     s += ' Would you agree?'
 
             # if not self.is_disagreeing and
-            if decision(self.explain_prob) and len(expl_s) > 0:
+            if decision(self.explain_prob) and len(expl_s) > 0 \
+                    and state.step_no != 1:
                 # and not self.mode == 'optimal':
                 s += '\n' + expl_s
 
@@ -616,15 +630,16 @@ class RoboticAgent(object):
                     ]
                     s = random.choice(options)
                 else:
+                    verb = 'think' if decision(0.5) else 'believe'
                     options = [
-                        ("I really don’t think {} is correct."
+                        ("I really don’t {} {} is correct."
                          "Fine, since you insist so much!").format(
-                            edge_s),
+                            verb, edge_s),
                         # "Okay if you really want.",
                         # "If you insist, okay.",
                         ("I see that you really want to connect them:"
-                            " fine. I still don’t think {} is correct.".format(
-                                edge_s)),
+                            " fine. I still don’t {} {} is correct.".format(
+                                verb, edge_s)),
                         # ("What can I say,"
                         #  " if you want it so much! Okay."),
                     ]
@@ -637,14 +652,20 @@ class RoboticAgent(object):
             # Agree with match.
             else:
                 common_s = ''
+                verb = 'think' if decision(0.5) else 'believe'
                 if self.mode == 'aligning':
-                    if is_match_correct or my_beliefs[u][v]['is_aligned']:
-                        common_s = 'we both '
+                    common_s = 'we both '
+                    if (is_match_correct or my_beliefs[u][v]['is_aligned']):
                         options = [
-                            "You seem to believe that {} is correct, okay. I agree.".format( 
-                                edge_s),
-                            "You think {} is best. I agree with your belief.".format( 
-                                edge_s),
+                            ("You seem to {} that {} is correct, okay."
+                             " I agree.").format( 
+                                verb, edge_s),
+                            ("You {} {} is best."
+                             " I agree with your belief.").format( 
+                                verb, edge_s),
+                            ("You {} {} is a good choice. "
+                             "I agree: {} it is correct!").format( 
+                                verb, edge_s, common_s),
                             # and I now think that you think it is correct too!
                             # "I agree with you!",
                             # "I definitely agree!",
@@ -653,17 +674,40 @@ class RoboticAgent(object):
                             # "Definitely, that's a good choice!",
                             # "Very well, let's connect them.",
                         ]
+                    else:
+                        me = 'I {} that '.format(verb) if decision(0.4) else ''
+                        options = [
+                            "{}{}it is correct, so, I agree.".format( 
+                                me, common_s),
+                            "{}{}it good, then, I agree.".format( 
+                                me, common_s),
+                            ("{}{}it is a good one,"
+                             " therefore, I agree.").format( 
+                                me, common_s),
+                            ("{}{}it is a good choice, then,"
+                             " I agree.").format( 
+                                me, common_s),
+                            # and I now think that you think it is correct too!
+                            # "I agree with you!",
+                            "I definitely agree! {}{} it is correct!".format(
+                                me, common_s),
+                            # "I agree!",
+                            # "Okay, I think it is a good one too!",
+                            # "Definitely, that's a good choice!",
+                            # "Very well, let's connect them.",
+                        ]
                 else:
                     options = [
-                        "I think that {}it is correct, so I agree.".format( 
-                            common_s),
-                        "I think that {}it good, then, I agree.".format( 
-                            common_s),
-                        "I believe {}it is a good one, so I agree.".format( 
-                            common_s),
-                        ("I believe {}it is a good choice, then,"
+                        "I {} that {}it is correct, so, I agree.".format( 
+                            verb, common_s),
+                        "I {} that {}it good, then, I agree.".format( 
+                            verb, common_s),
+                        ("I {} {}it is a good one,"
+                         " therefore, I agree.").format( 
+                            verb, common_s),
+                        ("I {} {}it is a good choice, then,"
                          " I agree.").format( 
-                            common_s),
+                            verb, common_s),
                         # and I now think that you think it is correct too!
                         # "I agree with you!",
                         # "I definitely agree!",
@@ -672,6 +716,7 @@ class RoboticAgent(object):
                         # "Definitely, that's a good choice!",
                         # "Very well, let's connect them.",
                     ]
+
                 s = random.choice(options)
 
                 if decision(self.explain_prob) and len(expl_s) > 0:
@@ -873,9 +918,10 @@ class RoboticAgent(object):
             edge_s = '{} to {}'.format(u_name, v_name)
 
             # Construct an intentional utterance about the action.
+            verb = 'think' if decision(0.5) else 'believe'
             options = [
-                "I see, you think {} is correct.".format(edge_s),
-                "Hmm, you think {} is a good one!".format(edge_s),
+                "I see, you {} {} is correct.".format(verb, edge_s),
+                "Hmm, you {} {} is a good one!".format(verb, edge_s),
                 # "I see, you want to connect {}.".format(
                 #     edge_s),
                 # "Hmm, you would like to go from {}!".format(
@@ -978,28 +1024,34 @@ class RoboticAgent(object):
                      " a mine and dragging to another.")
             # Any non-initial agreement.
             else:
-                options = [
-                    "Great to see that you agree.",
-                    "Very well, you agree.",
-                    "Good, we agree.",
-                    "Good, you agree!",
-                    "Great! You agree!",
-                    "Great, you agree with me!",
-                ]
-                s = random.choice(options)
-                if decision(0.5):
+                s = ''
+                if decision(0.7):
+                    options = [
+                        "Great to see that you agree.",
+                        "Very well, you agree.",
+                        "Good, we agree.",
+                        "Good, you agree!",
+                        "Great! You agree!",
+                        "Great, you agree with me!",
+                    ]
+                    s += random.choice(options)
+                if decision(0.7):
                     options = [
                         "Then they are connected.",
                         "They are connected now.",
+                        "Now there is a way in between them.",
                     ]
-                    s += random.choice(options)             
+                    s += ' ' + random.choice(options)             
 
                 # Make a belief attribution utterance if intentional robot.
                 if self.mode == 'aligning':
+                    verb = 'think' if decision(0.5) else 'believe'
                     options = [
-                        "Then, we both think it is a good connection.",
-                        "Then, we both think it is a correct choice.",
-                        "So, we both think it is a correct one.",
+                        "Then, we both {} it is a good connection.".format(
+                            verb),
+                        "Then, we both {} it is a correct choice.".format(
+                            verb),
+                        "So, we both {} it is a correct one.".format(verb),
                         # "Then, you think it is the right connection.",
                         # "Then, you think it is a correct choice.",
                         # "So, you think it is the right one.",
@@ -1008,10 +1060,12 @@ class RoboticAgent(object):
                     if decision(self.attrib_prob):
                         s += ' ' + random.choice(options)
 
+                c = 'Now' if decision(0.5) else 'Then'
                 options = [
-                    "Now it is your turn: what should we do?",
-                    "Now, you go: which ones should we connect?",
-                    "Then, it is your turn: which mines shall we connect?",
+                    "{} it is your turn: what should we do?".format(c),
+                    "{}, you go: which ones should we connect?".format(c),
+                    ("{}, it is your turn:"
+                     " which mines shall we connect?").format(c),
                     "So, what should we do now?",
                 ]
                 s += '\n' + random.choice(options)
@@ -1122,13 +1176,16 @@ class RoboticAgent(object):
                         'Really?',
                     ]
                     mismatch_s = random.choice(options)
+                    verb = 'think' if decision(0.5) else 'believe'
+                    verb_p = 'thought' if decision(0.5) else 'believed'
                     options = [
-                        " Didn't you think"
-                        " {} was a correct choice?".format(edge_s),
-                        " Didn't you believe"
-                        " {} was a good one?".format(edge_s),
-                        " I thought you believed"
-                        " {} was a correct choice!".format(edge_s),
+                        (" Didn't you {}"
+                         " {} was a correct choice?").format(verb, edge_s),
+                        (" Didn't you {}"
+                         " {} was a good one?").format(verb, edge_s),
+                        (" I {} you {}"
+                         " {} was a correct choice!").format(
+                            verb_p, verb_p, edge_s),
                         # " I believed you thought"
                         # " {} was a good one!".format(edge_s),
                         # " I thought you thought"
@@ -1152,15 +1209,16 @@ class RoboticAgent(object):
 
             # Attribute belief if intentional robot.
             if self.mode == 'aligning':
+                verb = 'think' if decision(0.5) else 'believe'
                 options = [
                     #  Then, I think ,
-                    ("Then you don't think"
-                        " it is a good connection."),
+                    ("Then you don't {}"
+                        " it is a good connection.").format(verb),
                     "Then, you don't think it is correct.",
-                    ("Then, you don't think"
-                        " it is a correct choice."),
-                    "Then, I think, that you don't think it is a good one.",
-                    "Then I think, that you think it is a wrong one.",
+                    ("Then, you don't {}"
+                        " it is a correct choice.").format(verb),
+                    "Then you don't {} that it is a good one.".format(verb),
+                    "Then you {} it is a wrong one.".format(verb),
                 ]
                 if decision(self.attrib_prob):
                     s += ' ' + random.choice(options)
@@ -1180,7 +1238,7 @@ class RoboticAgent(object):
                 "Then, what should we do now?",
                 "What would you like to do, then?",
                 "Then, what should we do?",
-                "Then, what would yo like to do?",
+                "Then, what would you like to do?",
                 "So, what should we do now?",
             ]
             s += '\n' + random.choice(options)
@@ -1253,7 +1311,9 @@ class RoboticAgent(object):
                 options = [
                     ('Oh, the system checked our connection: '
                      'it seems there is a better one!'),
-                    ('Ah, the system checked our connection: '
+                    ('Ah, the system checked our path: '
+                     'It seems we can do better!'),
+                    ('Oh, the system says our path is not the best: '
                      'It seems we can do better!'),
                 ]
                 self.say(random.choice(options))
@@ -1727,7 +1787,7 @@ class RoboticAgent(object):
     def express(self, gesture, is_blocking=False, speed=1):
         """TODO: docstring for express"""
         rospy.loginfo('Robot expresses: "{}"{}{}'.format(
-            gesture, ' (speed: {}{})' if speed != 1 else '',
+            gesture, ' (speed: {})'.format(speed) if speed != 1 else '',
             '' if is_blocking else ' (non-blocking)'))
 
         resp = True

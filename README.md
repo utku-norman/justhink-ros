@@ -135,6 +135,12 @@ source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
 rm $ROS_LOG_DIR/agent_cognition.log
 export ROS_NAMESPACE=agent
+rosrun justhink_agent run_agent.py _mode:=greedy
+
+rosrun justhink_agent run_agent.py _mode:=optimal
+rosrun justhink_agent run_agent.py _mode:=aligning
+
+
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=greedy
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=optimal
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=aligning
@@ -153,6 +159,10 @@ rm $ROS_LOG_DIR/env_situation.log
 export ROS_NAMESPACE=env
 
 rosrun justhink_scenario run_scenario.py
+
+rosrun justhink_scenario run_scenario.py _entry:=collaboration-1
+rosrun justhink_scenario run_scenario.py _entry:=collaboration-2
+
 
 rosrun justhink_scenario run_scenario.py _robot_text:=True
 

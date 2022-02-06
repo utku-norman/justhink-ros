@@ -84,14 +84,24 @@ class AppWindow(pyglet.window.Window):
         self._is_alt = False
         self._is_a = False
 
-        # Set Name of the current and hence initial activity.
-        self._cur_scene_name = 'cover'
-        # self._cur_scene_name = 'welcome'
-        # self._cur_scene_name = 'tutorial'
-        # self._cur_scene_name = 'pretest-1'
-        # self._cur_scene_name = 'pretest-5'
-        self._cur_scene_name = 'collaboration-1'
-        # self._cur_scene_name = 'collaboration-2'
+        # # Set Name of the current and hence initial activity.
+        # self._cur_scene_name = 'cover'
+        # # self._cur_scene_name = 'welcome'
+        # # self._cur_scene_name = 'tutorial'
+        # # self._cur_scene_name = 'pretest-1'
+        # # self._cur_scene_name = 'pretest-5'
+        # self._cur_scene_name = 'collaboration-1'
+        # # self._cur_scene_name = 'collaboration-2'
+
+        # Robot mode or condition for experimentation.
+        param_name = '~entry'
+        entry = rospy.get_param(param_name, 'cover')
+        if rospy.has_param(param_name):
+            rospy.delete_param(param_name)
+        assert entry in self._scenes
+        rospy.logwarn('Entry activity is "{}".'.format(entry))
+        self._cur_scene_name = entry
+        print()
 
         caption = self._make_caption()
 
@@ -139,8 +149,9 @@ class AppWindow(pyglet.window.Window):
         self.update()
 
         self.set_scene(self.cur_scene_name)
-        self.publish_activity_transition(
-            self.cur_scene_name, self.cur_scene_name)
+        ## set scene already publishes
+        # self.publish_activity_transition(
+        #     self.cur_scene_name, self.cur_scene_name)
 
         rospy.loginfo('Human application window is ready!')
         print()
