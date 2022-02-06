@@ -1300,10 +1300,10 @@ class RoboticAgent(object):
 
                 # Set the next activity.
                 if self.cur_world.name == 'collaboration-1':
-                    rospy.sleep(3)
+                    rospy.sleep(5)
                     self.set_activity('collaboration-2')
                 elif self.cur_world.name == 'collaboration-2':
-                    rospy.sleep(3)
+                    rospy.sleep(5)
                     self.set_activity('posttest-1')
             else:
                 # Report the result: failure.
@@ -1349,7 +1349,7 @@ class RoboticAgent(object):
                      '\nWe connected all of them while'
                      ' spending as little as possible!')
                 self.say(s)
-                delay = 0 if self.with_robot else 1
+                delay = 2 if self.with_robot else 4
                 rospy.sleep(delay)
 
                 self.set_activity('collaboration-2')
@@ -1422,7 +1422,7 @@ class RoboticAgent(object):
             self.collaboration_observation(activity)
         elif 'posttest' in activity:
             self.posttest_observation(activity)
-        elif 'debriefing' in activity:
+        elif 'bye' in activity:
             self.goodbye_observation()
 
     def cover_observation(self):
