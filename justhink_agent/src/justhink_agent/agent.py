@@ -370,7 +370,7 @@ class RoboticAgent(object):
 
         elif isinstance(planned_action, AttemptSubmitAction):
             if state.is_submitting:
-                action = ContinueAction(agent=Agent.ROBOT)
+                action = SubmitAction(agent=Agent.ROBOT)
             else:
                 action = AttemptSubmitAction(agent=Agent.ROBOT)
 
@@ -675,7 +675,7 @@ class RoboticAgent(object):
                             # "Very well, let's connect them.",
                         ]
                     else:
-                        
+
                         me = 'I {} that '.format(verb) if decision(0.4) else ''
                         options = [
                             "{}{}it is correct, so, I agree.".format( 
