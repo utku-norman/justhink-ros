@@ -1540,6 +1540,10 @@ class RoboticAgent(object):
                  " from any mine to any other mine by some path!")
             self.say(s)
 
+            delay = 1 if self.with_robot else 3
+            s = "Try to spend as few francs as possible and, make the cheapest connection."
+            self.say(s)
+
             # Connectedess constraint.
             self.express('point_activity')
             s = ("You can only build from the ones you have connected,"
