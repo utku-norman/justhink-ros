@@ -1550,7 +1550,6 @@ class RoboticAgent(object):
             s = ("You can only build from the ones you have connected,"
                  " after you start")
             self.say(s)
-            delay = 1 if self.with_robot else 3
 
             # Motivate and signal for the upcoming collaborative activity.
             delay = 1 if self.with_robot else 3
@@ -1570,7 +1569,7 @@ class RoboticAgent(object):
             self.express('curious')
             s = ("Okay, so, let's try to connect these different "
                  "gold mines to help the miners go\nbetween all of them. "
-                 "Try to spend as few francs as you can. Give it a try!")
+                 "Try to spend less. Give it a try!")
             self.say(s)
             self.express('left_arm_up_pull_down')
             delay = 1 if self.with_robot else 3
