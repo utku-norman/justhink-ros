@@ -112,7 +112,7 @@ rosservice call /qt_robot/setting/setVolume 80    # for experiment
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
 ```
 
-2) (optional) In a terminal start logging:
+2) In a terminal start logging:
 ```
 NO=1 # Student No
 rosrun justhink_robot run_recorder.sh $NO
@@ -120,7 +120,6 @@ rosrun justhink_robot run_recorder.sh $NO
 
 3) In another terminal, start the robot node:
 ```
-# JUSTHINK_WORLD_DIR points to the location of the justhink_world source code.
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
 export ROS_LOG_DIR=$(rospack find justhink_robot)/data/log
@@ -134,7 +133,6 @@ rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
 
 4) In another terminal, start the agent node:
 ```
-# JUSTHINK_WORLD_DIR points to the location of the justhink_world source code.
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
@@ -164,6 +162,7 @@ rm $ROS_LOG_DIR/env_situation.log
 export ROS_NAMESPACE=env
 
 rosrun justhink_scenario run_scenario.py
+
 
 rosrun justhink_scenario run_scenario.py _entry:=collaboration-1
 rosrun justhink_scenario run_scenario.py _entry:=collaboration-2

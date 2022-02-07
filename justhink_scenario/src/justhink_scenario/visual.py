@@ -93,7 +93,7 @@ class AppWindow(pyglet.window.Window):
         # self._cur_scene_name = 'collaboration-1'
         # # self._cur_scene_name = 'collaboration-2'
 
-        # Robot mode or condition for experimentation.
+        # Agent mode or condition for experimentation.
         param_name = '~entry'
         entry = rospy.get_param(param_name, 'cover')
         if rospy.has_param(param_name):
@@ -149,7 +149,7 @@ class AppWindow(pyglet.window.Window):
         self.update()
 
         self.set_scene(self.cur_scene_name)
-        ## set scene already publishes
+        # set scene already publishes
         # self.publish_activity_transition(
         #     self.cur_scene_name, self.cur_scene_name)
 
@@ -194,7 +194,8 @@ class AppWindow(pyglet.window.Window):
             try:
                 # Do not animate if the key A is pressed.
                 self.set_scene(
-                    self._scene_order[value], animated=not self._is_a)
+                    self._scene_order[value],
+                    animated=not self._is_a)
             except Exception as e:
                 print('Trying to set scene to {}/{}'.format(
                     value, self.num_scenes))
@@ -302,9 +303,9 @@ class AppWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         self.publish_key_press(symbol, modifiers)
 
-        if symbol == key.LSHIFT or symbol == key.RSHIFT:
+        if (symbol == key.LSHIFT) or (symbol == key.RSHIFT):
             self._is_shift = True
-        if symbol == key.LALT or symbol == key.RALT:
+        if (symbol == key.LALT) or (symbol == key.RALT):
             self._is_alt = True
         if symbol == key.A:
             self._is_a = True
@@ -333,6 +334,7 @@ class AppWindow(pyglet.window.Window):
         # publish the current scene if CTRL+SHIFT+P.
         elif symbol == key.P and modifiers & key.MOD_CTRL:
             if modifiers & key.MOD_SHIFT:
+                rospy.loginfo('Publishing state transition by key')
                 self.publish_activity_transition(
                     self.cur_scene_name, self.cur_scene_name)
             else:

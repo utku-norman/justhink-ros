@@ -95,8 +95,8 @@ class CollaborativeScene(DrawingScene, CollaborativeWorldScene):
     def on_mouse_release(self, x, y, button, modifiers, win):
         super().on_mouse_release(x, y, button, modifiers, win)
 
-        if self._state.is_terminal:
-            win.scene_no = win.scene_no + 1
+        # if self._state.is_terminal:
+        #     win.scene_no = win.scene_no + 1
 
 
 class ProfileScene(Scene):
