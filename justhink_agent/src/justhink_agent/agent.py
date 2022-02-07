@@ -86,7 +86,7 @@ class RoboticAgent(object):
 
         self.cur_world = None
 
-        s = ("Connect the gold mines to each other,"
+        s = ("Connect the rare metal mines to each other,"
              " so that miners can go from any mine to any other"
              "\nby some path: try to spend as little as you can.")
         self.goal_help_text = s
@@ -1392,8 +1392,9 @@ class RoboticAgent(object):
         if data.next != data.current:
             rospy.loginfo('Activity transition from {} to {}'.format(
                 data.current, data.next))
-            self.is_instructing = True
-            rospy.logwarn('Will instruct from this point on.')
+            if not self.is_instructing:
+                self.is_instructing = True
+                rospy.logwarn('Will instruct from this point on.')
 
         self.cur_activity = activity
         self.window.cur_activity_name = activity
@@ -1473,7 +1474,7 @@ class RoboticAgent(object):
         rospy.sleep(1)
         s = ('Look at this! This is a map of Switzerland.'
              ' You see many mountains,'
-             ' and in all of\nthe mountains there is gold!'
+             ' and in all of\nthe mountains there are rare metals!'
              ' You also see buildings, but they are not important.')
         self.say(s)
 
@@ -1508,7 +1509,7 @@ class RoboticAgent(object):
         # Introduce the mines and the tracks.
         self.express('point_activity')
         s = ("Before we play together, let's see how to interact"
-             " with the game. You see here\ntwo gold mines, with "
+             " with the game. You see here\ntwo rare metal mines, with "
              "a possible connection between them, shown as a gray track.")
         self.say(s, is_setting_text=False)
         delay = 1 if self.with_robot else 4
@@ -1516,7 +1517,7 @@ class RoboticAgent(object):
 
         # Introduce the goal.
         self.express('swipe_left')
-        s = ("Let's connect these two gold mines to each other,"
+        s = ("Let's connect these two mines to each other,"
              " so that the miners can travel\nbetween them. For this, "
              "click on one mine, and go to the other without releasing!")
         self.say(s)
@@ -1539,7 +1540,7 @@ class RoboticAgent(object):
             self.set_pause(True)
             self.express('point_activity')
             s = ("Now, let’s start the game! Go ahead and connect "
-                 "all the gold mines to each other\nso that miners can go"
+                 "all the rare metal mines to each other\nso that miners can go"
                  " from any mine to any other mine by some path!")
             self.say(s)
 
@@ -1571,7 +1572,7 @@ class RoboticAgent(object):
             self.set_pause(True)
             self.express('curious')
             s = ("Okay, so, let's try to connect these different "
-                 "gold mines to help the miners go\nbetween all of them. "
+                 "mines to help the miners go\nbetween all of them. "
                  "Try to spend less. Give it a try!")
             self.say(s)
             self.express('left_arm_up_pull_down')
@@ -1585,7 +1586,7 @@ class RoboticAgent(object):
             self.set_pause(True)
             self.express('point_human')
             s = ("So you are done with the second one."
-                 " What about these gold mines? Let's connect"
+                 " What about these mines? Let's connect"
                  "\nthem as cheaply as possible, while miners can travel"
                  " between them. Go ahead!")
             self.say(s)
@@ -1660,7 +1661,7 @@ class RoboticAgent(object):
         # Fourth posttest activity.
         elif '4' in activity:
             self.express('curious')
-            s = ("Now, what about these gold mines? "
+            s = ("Now, what about these mines? "
                  "Be sure that miners can go from any mine\nto any other."
                  " Also, try to spend as little as possible."
                  " Give it a try!")

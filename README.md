@@ -106,7 +106,7 @@ sudo apt-get install python3-catkin-tools
 1) (optional) Set the volume level of the robot.
 ```
 rosservice call /qt_robot/setting/setVolume 52    # for development
-rosservice call /qt_robot/setting/setVolume 75    # for experiment
+rosservice call /qt_robot/setting/setVolume 80    # for experiment
 
 # Test
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
