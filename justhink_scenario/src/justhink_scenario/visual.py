@@ -562,6 +562,11 @@ class AppWindow(pyglet.window.Window):
         print()
 
     def reply_set_activity_request(self, data):
+        if self._cur_scene_name == data.name:
+            s = 'Trying to set to the same scene: {}. Ignoring...'.format(
+                data.name)
+            rospy.logwarn(s)
+            return False
         resp = self.set_scene(name=data.name)
         log_service_response(self.set_activity_service, data, resp)
         return resp

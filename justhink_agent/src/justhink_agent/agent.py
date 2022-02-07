@@ -851,6 +851,10 @@ class RoboticAgent(object):
             self.set_activity('pretest-1')
 
     def update_current_world(self, activity):
+        print()
+        rospy.logwarn('World updated from {} to {}'.format(
+            self.cur_world, activity))
+        print()
         if activity == 'collaboration-1':
             self.cur_world = self.world
         elif activity == 'collaboration-2':
@@ -859,7 +863,6 @@ class RoboticAgent(object):
             self.cur_world = self.world_tutorial
         else:
             return
-        rospy.loginfo('World updated to {}'.format(self.cur_world))
 
     def collaboration_state_observation(
             self, activity, state, action, next_state):
@@ -1099,27 +1102,31 @@ class RoboticAgent(object):
                     print(e)
 
                 beliefs = prev_mental_state.beliefs['me']['you']['world']
-                if beliefs[u][v]['is_optimal'] == 0.0:
-                    options = [
-                        'Oh, what a surprise!',
-                        'Oh, really!',
-                        'Oh, really?',
-                        'Surprising!',
-                        'No way!',
-                        'Really?',
-                    ]
-                    mismatch_s = random.choice(options)
-                    options = [
-                        " I thought you didn't think"
-                        " {} was a correct choice!".format(edge_s),
-                        # " I thought you didn't think"
-                        # " it was a good choice!",
-                        # " I thought you didn't think "
-                        # "we should connect them!",
-                        # " I thought you didn't think"
-                        # " we should do that!",
-                    ]
-                    mismatch_s += random.choice(options)
+                try:
+                    if beliefs[u][v]['is_optimal'] == 0.0:
+                        options = [
+                            'Oh, what a surprise!',
+                            'Oh, really!',
+                            'Oh, really?',
+                            'Surprising!',
+                            'No way!',
+                            'Really?',
+                        ]
+                        mismatch_s = random.choice(options)
+                        options = [
+                            " I thought you didn't think"
+                            " {} was a correct choice!".format(edge_s),
+                            # " I thought you didn't think"
+                            # " it was a good choice!",
+                            # " I thought you didn't think "
+                            # "we should connect them!",
+                            # " I thought you didn't think"
+                            # " we should do that!",
+                        ]
+                        mismatch_s += random.choice(options)
+                except Exception as e:
+                    rospy.logerr(e)
+                    mismatch_s = ''
 
             if self.mode == 'aligning':
                 # Make the mismatch utterance if not empty.
@@ -1316,6 +1323,7 @@ class RoboticAgent(object):
 
                 # Set the next activity.
                 if self.cur_world.name == 'collaboration-1':
+                    self.update_current_world('collaboration-2')
                     self.set_activity('collaboration-2')
                 elif self.cur_world.name == 'collaboration-2':
                     self.set_activity('posttest-1')
@@ -1377,6 +1385,7 @@ class RoboticAgent(object):
 
                 # Set the next activity.
                 if self.cur_world.name == 'collaboration-1':
+                    self.update_current_world('collaboration-2')
                     self.set_activity('collaboration-2')
                 elif self.cur_world.name == 'collaboration-2':
                     self.set_activity('posttest-1')
@@ -1453,7 +1462,7 @@ class RoboticAgent(object):
             self.pretest_observation(activity)
         elif 'collaboration' in activity:
             self.collaboration_observation(activity)
-        elif 'posttest' in activity:
+        elif 'posttest' in activity and self.is_instructing:
             self.posttest_observation(activity)
         elif 'bye' in activity:
             self.goodbye_observation()
@@ -1534,27 +1543,26 @@ class RoboticAgent(object):
         """React to the start of the tutorial activity."""
         self.help_text = None
 
-        if self.is_instructing:
-            self.set_pause(True)
+        self.set_pause(True)
 
-            # Introduce the mines and the tracks.
-            self.express('point_activity')
-            s = ("Before we play together, let's see how to interact"
-                 " with the game. You see here\ntwo rare metal mines, with "
-                 "a possible connection between them, shown as a gray track.")
-            self.say(s, is_setting_text=False)
-            delay = 1 if self.with_robot else 4
-            rospy.sleep(delay)
+        # Introduce the mines and the tracks.
+        self.express('point_activity')
+        s = ("Before we play together, let's see how to interact"
+             " with the game. You see here\ntwo rare metal mines, with "
+             "a possible connection between them, shown as a gray track.")
+        self.say(s, is_setting_text=False)
+        delay = 1 if self.with_robot else 4
+        rospy.sleep(delay)
 
-            # Introduce the goal.
-            self.express('swipe_left')
-            s = ("Let's connect these two mines to each other,"
-                 " so that the miners can travel\nbetween them. For this, "
-                 "click on one mine, and go to the other without releasing!")
-            self.say(s)
-            delay = 0.5 if self.with_robot else 4
-            rospy.sleep(delay)
-            self.set_pause(False)
+        # Introduce the goal.
+        self.express('swipe_left')
+        s = ("Let's connect these two mines to each other,"
+             " so that the miners can travel\nbetween them. For this, "
+             "click on one mine, and go to the other without releasing!")
+        self.say(s)
+        delay = 0.5 if self.with_robot else 4
+        rospy.sleep(delay)
+        self.set_pause(False)
 
     def pretest_observation(self, activity):
         """React to the start to a pretest activity.
@@ -1565,97 +1573,96 @@ class RoboticAgent(object):
         """
         self.help_text = self.goal_help_text
 
-        if self.is_instructing:
-            # First pretest activity.
-            if '1' in activity:
-                # Give the goal.
-                self.set_pause(True)
-                self.express('point_activity')
-                s = ("Now, let’s start the game! Go ahead and connect "
-                     "all the rare metal mines to each other\n"
-                     "so that miners can go"
-                     " from any mine to any other mine by some path!")
-                self.say(s)
+        # First pretest activity.
+        if '1' in activity:
+            # Give the goal.
+            self.set_pause(True)
+            self.express('point_activity')
+            s = ("Now, let’s start the game! Go ahead and connect "
+                 "all the rare metal mines to each other\n"
+                 "so that miners can go"
+                 " from any mine to any other mine by some path!")
+            self.say(s)
 
-                delay = 1 if self.with_robot else 3
-                s = ("Try to spend as little as possible, and,"
-                     " make the cheapest connection you can.")
-                self.say(s)
+            delay = 1 if self.with_robot else 3
+            s = ("Try to spend as little as possible, and,"
+                 " make the cheapest connection you can.")
+            self.say(s)
 
-                # Connectedess constraint.
-                self.express('point_activity')
-                s = ("You can only build from the ones you have connected,"
-                     " after you start")
-                self.say(s)
+            # Connectedess constraint.
+            self.express('point_activity')
+            s = ("You can only build from the ones you have connected,"
+                 " after you start")
+            self.say(s)
 
-                # Motivate and signal for the upcoming collaborative activity.
-                delay = 1 if self.with_robot else 3
-                rospy.sleep(delay)
-                self.express(
-                    'point_human', is_blocking=True)
-                s = ("Please give it a try by yourself, later, "
-                     "we will do it together!")
-                self.say(s)
-                self.express('clap')
-                self.set_pause(False)
+            # Motivate and signal for the upcoming collaborative activity.
+            delay = 1 if self.with_robot else 3
+            rospy.sleep(delay)
+            self.express(
+                'point_human', is_blocking=True)
+            s = ("Please give it a try by yourself, later, "
+                 "we will do it together!")
+            self.say(s)
+            self.express('clap')
+            self.set_pause(False)
 
-            # Second pretest activity.
-            elif '2' in activity:
-                # Give the goal.
-                self.set_pause(True)
-                self.express('curious')
-                s = ("Okay, so, let's try to connect these different "
-                     "mines to help the miners go\nbetween all of them. "
-                     "Try to spend less. Give it a try!")
-                self.say(s)
-                self.express('left_arm_up_pull_down')
-                delay = 1 if self.with_robot else 3
-                rospy.sleep(delay)
-                self.set_pause(False)
+        # Second pretest activity.
+        elif '2' in activity:
+            # Give the goal.
+            self.set_pause(True)
+            self.express('curious')
+            s = ("Okay, so, let's try to connect these different "
+                 "mines to help the miners go\nbetween all of them. "
+                 "Try to spend less. Give it a try!")
+            self.say(s)
+            self.express('left_arm_up_pull_down')
+            delay = 1 if self.with_robot else 3
+            rospy.sleep(delay)
+            self.set_pause(False)
 
-            # Third pretest activity.
-            elif '3' in activity:
-                # Give the goal.
-                self.set_pause(True)
-                self.express('point_human')
-                s = ("So you are done with the second one."
-                     " What about these mines? Let's connect"
-                     "\nthem as cheaply as possible, while miners can travel"
-                     " between them. Go ahead!")
-                self.say(s)
-                self.express('challenge')
-                delay = 1 if self.with_robot else 3
-                rospy.sleep(delay)
-                self.set_pause(False)
+        # Third pretest activity.
+        elif '3' in activity:
+            # Give the goal.
+            self.set_pause(True)
+            self.express('point_human')
+            s = ("So you are done with the second one."
+                 " What about these mines? Let's connect"
+                 "\nthem as cheaply as possible, while miners can travel"
+                 " between them. Go ahead!")
+            self.say(s)
+            self.express('challenge')
+            delay = 1 if self.with_robot else 3
+            rospy.sleep(delay)
+            self.set_pause(False)
 
-            # Fourth pretest activity.
-            elif '4' in activity:
-                # Give the goal.
-                self.set_pause(True)
-                self.express('hard_nod', is_blocking=True)
-                s = ("Okay, let's try for this one now."
-                     " Connect them while spending as little as possible,"
-                     "\nmake sure miners can travel between all of them."
-                     " Soon, we will do it together. Good luck!")
-                self.say(s)
-                self.express('curious')
-                delay = 1 if self.with_robot else 3
-                rospy.sleep(delay)
-                self.set_pause(False)
+        # Fourth pretest activity.
+        elif '4' in activity:
+            # Give the goal.
+            self.set_pause(True)
+            self.express('hard_nod', is_blocking=True)
+            s = ("Okay, let's try for this one now."
+                 " Connect them while spending as little as possible,"
+                 "\nmake sure miners can travel between all of them."
+                 " Soon, we will do it together. Good luck!")
+            self.say(s)
+            self.express('curious')
+            delay = 1 if self.with_robot else 3
+            rospy.sleep(delay)
+            self.set_pause(False)
 
-            # Fifth pretest activity.
-            elif '5' in activity:
-                # Give the goal.
-                self.set_pause(True)
-                self.express('right_arm_up_down')
-                s = ("So, for this last time, please connect these different"
-                     " mines as\ncheaply as you can, by yourself. "
-                     "Then, we will play together!")
-                self.say(s)
-                self.express('curious')
-                delay = 1 if self.with_robot else 3
-                rospy.sleep(delay)
-                self.set_pause(False)
+        # Fifth pretest activity.
+        elif '5' in activity:
+            # Give the goal.
+            self.set_pause(True)
+            self.express('right_arm_up_down')
+            s = ("So, for this last time, please connect these different"
+                 " mines as\ncheaply as you can, by yourself. "
+                 "Then, we will play together!")
+            self.say(s)
+            self.express('curious')
+            delay = 1 if self.with_robot else 3
+            rospy.sleep(delay)
+            self.set_pause(False)
 
     def posttest_observation(self, activity):
         """React to the start to a posttest activity.
@@ -1666,49 +1673,47 @@ class RoboticAgent(object):
         """
         self.help_text = None
 
-        if self.is_instructing:
+        # First posttest activity.
+        if '1' in activity:
+            self.express('point_activity')
+            s = ('It was a great experience for me to work with you!'
+                 ' Now, please connect all of\nthe mines to each other'
+                 ' by some path, and spend as little as possible, '
+                 'by yourself.')
+            self.say(s)
 
-            # First posttest activity.
-            if '1' in activity:
-                self.express('point_activity')
-                s = ('It was a great experience for me to work with you!'
-                     ' Now, please connect all of\nthe mines to each other'
-                     ' by some path, and spend as little as possible, '
-                     'by yourself.')
-                self.say(s)
+        # Second posttest activity.
+        elif '2' in activity:
+            self.express('point_human')
+            s = ("So, let's try this one. Make sure miners can go from"
+                 " any mine to any other, through\nthe tracks. And, try"
+                 " to spend as few francs as you can!")
+            self.say(s)
 
-            # Second posttest activity.
-            elif '2' in activity:
-                self.express('point_human')
-                s = ("So, let's try this one. Make sure miners can go from"
-                     " any mine to any other, through\nthe tracks. And, try"
-                     " to spend as few francs as you can!")
-                self.say(s)
+        # Third posttest activity.
+        elif '3' in activity:
+            self.express('curious')
+            s = ("Okay, now, another one. Miners should be able to go"
+                 "between all\nthe mines. And, please try to spend as"
+                 " few francs as you can!")
+            self.say(s)
 
-            # Third posttest activity.
-            elif '3' in activity:
-                self.express('curious')
-                s = ("Okay, now, another one. Miners should be able to go"
-                     "between all\nthe mines. And, please try to spend as"
-                     " few francs as you can!")
-                self.say(s)
+        # Fourth posttest activity.
+        elif '4' in activity:
+            self.express('curious')
+            s = ("Now, what about these mines? "
+                 "Be sure that miners can go from any mine\nto any other."
+                 " Also, try to spend as little as possible."
+                 " Give it a try!")
+            self.say(s)
 
-            # Fourth posttest activity.
-            elif '4' in activity:
-                self.express('curious')
-                s = ("Now, what about these mines? "
-                     "Be sure that miners can go from any mine\nto any other."
-                     " Also, try to spend as little as possible."
-                     " Give it a try!")
-                self.say(s)
-
-            # Fifth posttest activity.
-            elif '5' in activity:
-                self.express('curious')
-                s = ("So, I have a final one for you. Miners need to "
-                     "be able to go between all the mines:\ntry to find the"
-                     " cheapest such connection. Let me see how you do it!")
-                self.say(s)
+        # Fifth posttest activity.
+        elif '5' in activity:
+            self.express('curious')
+            s = ("So, I have a final one for you. Miners need to "
+                 "be able to go between all the mines:\ntry to find the"
+                 " cheapest such connection. Let me see how you do it!")
+            self.say(s)
 
     def collaboration_observation(self, activity):
         """React to the start to a collaboration activity.
