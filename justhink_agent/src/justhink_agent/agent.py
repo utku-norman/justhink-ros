@@ -705,7 +705,7 @@ class RoboticAgent(object):
                     options = [
                         "I {} that {}it is correct, so, I agree.".format(
                             verb, common_s),
-                        "I {} that {}it good, then, I agree.".format(
+                        "I {} that {}it is good, then, I agree.".format(
                             verb, common_s),
                         ("I {} {}it is a good one,"
                          " therefore, I agree.").format(
@@ -851,10 +851,6 @@ class RoboticAgent(object):
             self.set_activity('pretest-1')
 
     def update_current_world(self, activity):
-        print()
-        rospy.logwarn('World updated from {} to {}'.format(
-            self.cur_world, activity))
-        print()
         if activity == 'collaboration-1':
             self.cur_world = self.world
         elif activity == 'collaboration-2':
@@ -863,6 +859,10 @@ class RoboticAgent(object):
             self.cur_world = self.world_tutorial
         else:
             return
+        print()
+        rospy.logwarn('World updated from {} to {}'.format(
+            self.cur_world, activity))
+        print()
 
     def collaboration_state_observation(
             self, activity, state, action, next_state):
