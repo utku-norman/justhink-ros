@@ -705,7 +705,7 @@ class RoboticAgent(object):
                     options = [
                         "I {} that {}it is correct, so, I agree.".format(
                             verb, common_s),
-                        "I {} that {}it good, then, I agree.".format(
+                        "I {} that {}it is good, then, I agree.".format(
                             verb, common_s),
                         ("I {} {}it is a good one,"
                          " therefore, I agree.").format(
@@ -851,10 +851,6 @@ class RoboticAgent(object):
             self.set_activity('pretest-1')
 
     def update_current_world(self, activity):
-        print()
-        rospy.logwarn('World updated from {} to {}'.format(
-            self.cur_world, activity))
-        print()
         if activity == 'collaboration-1':
             self.cur_world = self.world
         elif activity == 'collaboration-2':
@@ -863,6 +859,10 @@ class RoboticAgent(object):
             self.cur_world = self.world_tutorial
         else:
             return
+        print()
+        rospy.logwarn('World updated from {} to {}'.format(
+            self.cur_world, activity))
+        print()
 
     def collaboration_state_observation(
             self, activity, state, action, next_state):
@@ -1551,7 +1551,7 @@ class RoboticAgent(object):
              " with the game. You see here\ntwo rare metal mines, with "
              "a possible connection between them, shown as a gray track.")
         self.say(s, is_setting_text=False)
-        delay = 1 if self.with_robot else 4
+        delay = 0.5 if self.with_robot else 2
         rospy.sleep(delay)
 
         # Introduce the goal.
@@ -1560,7 +1560,7 @@ class RoboticAgent(object):
              " so that the miners can travel\nbetween them. For this, "
              "click on one mine, and go to the other without releasing!")
         self.say(s)
-        delay = 0.5 if self.with_robot else 4
+        delay = 0.5 if self.with_robot else 2
         rospy.sleep(delay)
         self.set_pause(False)
 
@@ -1584,7 +1584,7 @@ class RoboticAgent(object):
                  " from any mine to any other mine by some path!")
             self.say(s)
 
-            delay = 1 if self.with_robot else 3
+            delay = 0.5 if self.with_robot else 2
             s = ("Try to spend as little as possible, and,"
                  " make the cheapest connection you can.")
             self.say(s)
@@ -1596,7 +1596,7 @@ class RoboticAgent(object):
             self.say(s)
 
             # Motivate and signal for the upcoming collaborative activity.
-            delay = 1 if self.with_robot else 3
+            delay = 0.5 if self.with_robot else 2
             rospy.sleep(delay)
             self.express(
                 'point_human', is_blocking=True)
@@ -1616,7 +1616,7 @@ class RoboticAgent(object):
                  "Try to spend less. Give it a try!")
             self.say(s)
             self.express('left_arm_up_pull_down')
-            delay = 1 if self.with_robot else 3
+            delay = 0.5 if self.with_robot else 2
             rospy.sleep(delay)
             self.set_pause(False)
 

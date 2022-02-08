@@ -110,6 +110,8 @@ rosservice call /qt_robot/setting/setVolume 80    # for experiment
 
 # Test
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
+ostopic pub -1 /qt_robot/emotion/show std_msgs/String "data: 'QT/happy'
+rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/happy'"
 ```
 
 2) In a terminal start logging:
@@ -123,7 +125,7 @@ rosrun justhink_robot run_recorder.sh $NO
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
 export ROS_LOG_DIR=$(rospack find justhink_robot)/data/log
-rm $ROS_LOG_DIR/agent_embodiment.log
+# rm $ROS_LOG_DIR/agent_embodiment.log
 export ROS_NAMESPACE=agent
 rosrun justhink_robot run_robot.py
 
@@ -136,12 +138,14 @@ rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
-rm $ROS_LOG_DIR/agent_cognition.log
+# rm $ROS_LOG_DIR/agent_cognition.log
 export ROS_NAMESPACE=agent
 rosrun justhink_agent run_agent.py _mode:=greedy
+rosrun justhink_agent run_agent.py _mode:=aligning
+
 
 rosrun justhink_agent run_agent.py _mode:=optimal
-rosrun justhink_agent run_agent.py _mode:=aligning
+
 
 
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=greedy
@@ -158,7 +162,7 @@ rosrun justhink_agent run_agent.py _instruct:=True
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 
 export ROS_LOG_DIR=$(rospack find justhink_scenario)/data/log
-rm $ROS_LOG_DIR/env_situation.log
+# rm $ROS_LOG_DIR/env_situation.log
 export ROS_NAMESPACE=env
 
 rosrun justhink_scenario run_scenario.py
