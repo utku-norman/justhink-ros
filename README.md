@@ -103,26 +103,37 @@ sudo apt-get install python3-catkin-tools
 
 ## Usage
 
-1) (optional) Set the volume level of the robot.
+0) Convenience, to add these to `.bash_aliases`:
+```
+alias sourceros="source /opt/ros/noetic/setup.bash; source ~/catkin_ws/devel/setup.bash"
+alias sourcejusthink="sourceros; source /opt/ros/noetic/setup.bash; source ~/catkin_ws/devel/setup.bash; source ~/catkin_ws/src/justhink-ros/.venv/bin/activate"
+alias sourceqtrobot="sourceros; export ROS_IP=192.168.4.114; export ROS_MASTER_URI=http://192.168.4.1:11311"
+```
+
+1) Set the volume level of the robot.
 ```
 rosservice call /qt_robot/setting/setVolume 52    # for development
 rosservice call /qt_robot/setting/setVolume 80    # for experiment
 
-# Test
+# Test robot speech, gesture and facial expression topics.
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
-ostopic pub -1 /qt_robot/emotion/show std_msgs/String "data: 'QT/happy'
+rostopic pub -1 /qt_robot/emotion/show std_msgs/String "data: 'QT/happy'"
 rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/happy'"
 ```
 
-2) In a terminal start logging:
+2) Start the logger in a terminal:
 ```
-NO=1 # Student No
+sourcejusthink
+sourceqtrobot
+
+NO=3 # Student No
 rosrun justhink_robot run_recorder.sh $NO
 ```
 
-3) In another terminal, start the robot node:
+3) Start the robot node in another terminal:
 ```
-source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
+sourcejusthink
+sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_robot)/data/log
 # rm $ROS_LOG_DIR/agent_embodiment.log
@@ -133,14 +144,18 @@ rosrun justhink_robot run_robot.py
 rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
 ```
 
-4) In another terminal, start the agent node:
+4) Start the agent node in a third terminal:
 ```
-source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
+sourcejusthink
+sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
 # rm $ROS_LOG_DIR/agent_cognition.log
 export ROS_NAMESPACE=agent
+
 rosrun justhink_agent run_agent.py _mode:=optimal
+
+
 rosrun justhink_agent run_agent.py _mode:=greedy
 rosrun justhink_agent run_agent.py _mode:=aligning
 
@@ -157,7 +172,7 @@ rosrun justhink_agent run_agent.py _instruct:=True
 
 ```
 
-5) In another terminal, launch the learning scenario by running the situation node.
+5) Start the situation node (i.e. the learning scenario) in a fourth terminal:
 ```
 source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
 

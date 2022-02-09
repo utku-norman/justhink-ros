@@ -63,15 +63,17 @@ class RoboticAgent(object):
         if rospy.has_param(param_name):
             rospy.delete_param(param_name)
 
+        # Instructing upon entry.
         param_name = '~instruct'
         self.is_instructing = rospy.get_param(param_name, True)
         if rospy.has_param(param_name):
             rospy.delete_param(param_name)
         if self.is_instructing:
-            rospy.logwarn('Robot will introduce the activity.')
+            rospy.logwarn('Robot will introduce the next activity.')
         else:
-            rospy.logwarn('Robot will NOT introduce the activity.')
+            rospy.logwarn('Robot will NOT introduce the next activity.')
         print()
+        self.instructed_activities = set()
 
         param_name = '~lang'
         self.lang = rospy.get_param(param_name, 'en-US')
@@ -103,6 +105,7 @@ class RoboticAgent(object):
         self.help_text = 'Hello!'
 
         worlds = create_all_worlds(agent_strategy=self.mode)  # verbose=True)
+
         self.world = worlds['collaboration-1']
         self.world2 = worlds['collaboration-2']
         self.world_tutorial = worlds['tutorial']
@@ -140,10 +143,9 @@ class RoboticAgent(object):
         # except rospy.ServiceException as e:
         #     rospy.logerr("Service did not process request: {}".format(e))
 
-        self.instructed_activities = set()
-
         self.window.set_visible()
         self.window.move_window()
+        self.window.minimize()
 
         rospy.loginfo('Robot cognition window is ready!')
         print()
@@ -172,14 +174,16 @@ class RoboticAgent(object):
                 if state.step_no == 1:
                     base = 'there'
                 options = [
-                    'Because it is the cheapest from {}!'.format(base)
+                    'Because, it is the cheapest from {}!'.format(base)
                 ]
             else:
                 options = [
-                    'Because it is the best connection, from those we connected!',
-                    'Because it is the best one,'
+                    ('Because, it is the best connection,'
+                     ' from those we connected!'),
+                    'Because, it is the best one,'
                     ' that is from those we connected!',
-                    'Because it is the cheapest from the mines we have connected!',
+                    ('Because, it is the cheapest'
+                     ' from the mines we have connected!'),
                 ]
 
             s = random.choice(options)
@@ -192,13 +196,15 @@ class RoboticAgent(object):
         return s
 
     def construct_greedy_explanation(self, explanation, agent_cur_name):
-        # s = ''
+
         state = self.cur_world.env.state
 
         best_count = len(explanation.best)
         other_count = len(explanation.others)
         if isinstance(explanation, BetterThanExplanation):
-            if decision(0.5):  # 50% chance : from explanation.
+
+            # 50% chance : from explanation.
+            if decision(0.5):
                 if best_count > 1:  # multiple greedy optimal
                     opt_s = random.choice(['among the', *3*['one of the']])
                 else:
@@ -213,23 +219,25 @@ class RoboticAgent(object):
                     base = 'there'
 
                 options = [
-                    'Because it is {} cheapest from {}!'.format(opt_s, base),
-                    'Because it is {} {} from {}!'.format(opt_s, oth_s, base),
-                    'Because from {}, it is {} {}!'.format(base, opt_s, oth_s),
+                    'Because, it is {} cheapest from {}!'.format(opt_s, base),
+                    'Because, it is {} {} from {}!'.format(opt_s, oth_s, base),
+                    'Because, from {}, it is {} {}!'.format(base, opt_s, oth_s),
                 ]
                 if other_count > 0:
                     options += [
-                        'Because from {}, it is {} best option{}!'.format(
+                        'Because, from {}, it is {} best option{}!'.format(
                             base, opt_s, 's' if best_count > 1 else ''),
                     ]
                 else:
                     options += [
-                        'Because there is nowhere else to go from {}!'.format(
+                        'Because, there is nowhere else to go from {}!'.format(
                             base),
                     ]
 
                 s = random.choice(options)
-            else:   # 50% chance : to explanation.
+
+            # 50% chance : to explanation.
+            else:
                 nodes = {u for a in explanation.others for u in a.edge}
                 named_nodes = {state.network.get_node_name(u) for u in nodes}
                 excludeds = {state.network.get_node_name(u)
@@ -240,6 +248,7 @@ class RoboticAgent(object):
                         ', or '.join(named_others))
                 else:
                     s = 'Because there is nowhere else to go.'
+
         elif isinstance(explanation, ConnectedExplanation):
             base = agent_cur_name
             options = [
@@ -250,9 +259,10 @@ class RoboticAgent(object):
             ]
             s = random.choice(options)
 
-        # # TODO: check the need
-        # if self.is_instructing and state.step_no == 1:
-        #     s = ''
+        else:
+            rospy.logwarn(
+                'Explanation for {} is not implemented.'.format(explanation))
+            s = ''
 
         return s
 
@@ -266,6 +276,7 @@ class RoboticAgent(object):
         explanation = world.agent.planner.last_explanation
         planned_action = world.agent.planner.last_plan
 
+        rospy.loginfo('Robot observes {}'.format(world))
         rospy.loginfo('Robot plans to {}'.format(planned_action))
 
         # Get the current node info.
@@ -501,8 +512,7 @@ class RoboticAgent(object):
             # if not self.is_disagreeing and
             if decision(self.explain_prob) and len(expl_s) > 0 \
                     and state.step_no != 1:
-                # and not self.mode == 'optimal':
-                s += '\n' + expl_s      
+                s += '\n' + expl_s
 
             if decision(0.7) and state.step_no != 1:
                 if self.mode == 'aligning':
@@ -610,8 +620,6 @@ class RoboticAgent(object):
             #     s += '\n' + expl_s
 
             # Enact disagreeing.
-            # rospy.sleep(0.2)
-            # self.home_head()
             self.express('no')
             self.say(s)
             self.emote('smile')
@@ -624,13 +632,14 @@ class RoboticAgent(object):
             self.execute_action(action)
 
         elif isinstance(action, AgreeAction):
+            # Form a referring expression to the edge.
             if decision(0.5):
                 u_name, v_name = world.env.state.network.get_edge_name((u, v))
                 edge_s = '{} to {}'.format(u_name, v_name)
             else:
                 edge_s = 'it'
-            # # Agree due to mismatch.
-            # if is_mismatch:
+
+            # s = ''
             if is_forced_agree:
                 # Decide what to say.
                 if self.mode == 'aligning':
@@ -638,34 +647,30 @@ class RoboticAgent(object):
                         ("Okay, since you want it so much,"
                          " I agree, I now think {} is correct too."
                          "\nLet's connect them.".format(edge_s)),
-                        # "Okay, if you really want it so much.",
-                        # "Okay if you really want.",
-                        # "If you insist, okay.",
-                        # ("I see that you really want to connect them:"
-                        #     " fine."),
-                        # ("What can I say,"
-                        #  " if you want it so much! Okay."),
+                        "Okay, if you really want it so much.",
+                        ("Okay, if you really want,"
+                         " I agree, I now think {} is correct too."
+                         "\nLet's connect them.".format(edge_s)),
                     ]
-                    s = random.choice(options)
                 else:
                     verb = 'think' if decision(0.5) else 'believe'
                     options = [
                         ("I really don’t {} {} is correct."
                          " Fine, since you insist so much!").format(
                             verb, edge_s),
-                        # "Okay if you really want.",
-                        # "If you insist, okay.",
-                        ("I see that you really want to connect them:"
-                            " fine. I still don’t {} {} is correct.".format(
-                                verb, edge_s)),
-                        # ("What can I say,"
-                        #  " if you want it so much! Okay."),
+                        ("I see, that you really want to connect them:"
+                         " fine. I still don’t {} {} is correct.".format(
+                             verb, edge_s)),
                     ]
-                    s = random.choice(options)
+
+                # Decide what to say.
+                s = random.choice(options)
 
                 # Decide which gesture to perform.
-                # gesture = 'bored'
-                gesture = 'protect'
+                if decision(0.7):
+                    gesture = 'bored'
+                else:
+                    gesture = 'protect'
 
             # Agree with match.
             else:
@@ -673,7 +678,7 @@ class RoboticAgent(object):
                 verb = 'think' if decision(0.5) else 'believe'
                 if self.mode == 'aligning':
                     common_s = 'we both {} '.format(verb)
-                    if (is_match_correct or my_beliefs[u][v]['is_aligned']):
+                    if is_match_correct or my_beliefs[u][v]['is_aligned']:
                         options = [
                             ("You seem to {} that {} is correct, okay."
                              " I agree.").format(
@@ -684,16 +689,8 @@ class RoboticAgent(object):
                             ("You {} {} is a good choice. "
                              "I agree: {} it is correct!").format(
                                 verb, edge_s, common_s),
-                            # and I now think that you think it is correct too!
-                            # "I agree with you!",
-                            # "I definitely agree!",
-                            # "I agree!",
-                            # "Okay, I think it is a good one too!",
-                            # "Definitely, that's a good choice!",
-                            # "Very well, let's connect them.",
                         ]
                     else:
-
                         me = 'I {} that '.format(verb) if decision(0.4) else ''
                         options = [
                             "{}{}it is correct, so, I agree.".format(
@@ -706,39 +703,26 @@ class RoboticAgent(object):
                             ("{}{}it is a good choice, then,"
                              " I agree.").format(
                                 me, common_s),
-                            # and I now think that you think it is correct too!
-                            # "I agree with you!",
                             "I definitely agree! {}{} it is correct!".format(
                                 me, common_s),
-                            # "I agree!",
-                            # "Okay, I think it is a good one too!",
-                            # "Definitely, that's a good choice!",
-                            # "Very well, let's connect them.",
                         ]
+
+                # If not in aligning mode.
                 else:
                     options = [
                         "I {} that {}it is correct, so, I agree.".format(
                             verb, common_s),
-                        "I {} that {}it is good, then, I agree.".format(
-                            verb, common_s),
                         ("I {} {}it is a good one,"
                          " therefore, I agree.").format(
                             verb, common_s),
-                        ("I {} {}it is a good choice, then, I agree.").format(
+                        ("I {} {}it is a good choice,"
+                         " that's why, I agree.").format(
                             verb, common_s),
-                        # and I now think that you think it is correct too!
-                        # "I agree with you!",
-                        # "I definitely agree!",
-                        # "I agree!",
-                        # "Okay, I think it is a good one too!",
-                        # "Definitely, that's a good choice!",
-                        # "Very well, let's connect them.",
                     ]
 
-                    s = random.choice(options)
+                s = random.choice(options)
 
                 if decision(self.explain_prob) and len(expl_s) > 0:
-                    # and not self.mode == 'optimal':
                     s += '\n' + expl_s
 
                 gesture = 'yes'
@@ -753,7 +737,7 @@ class RoboticAgent(object):
                 self.express('rappel', is_blocking=True)
             elif decision(0.5):  # 40% chance overall
                 self.express('so', is_blocking=True)
-            # rospy.sleep(1.5)
+            rospy.sleep(0.5)
             self.home_head()
             self.execute_action(action)
 
@@ -769,8 +753,6 @@ class RoboticAgent(object):
             self.home_head()
             rospy.sleep(1)
             self.execute_action(action)
-            # rospy.sleep(2)
-            # self.execute_action(action)
 
         elif isinstance(action, SubmitAction):
             s = 'I am submitting...'
@@ -782,17 +764,28 @@ class RoboticAgent(object):
     def state_transition_callback(self, data):
         """Process state transition observations from a transition message."""
         log_heard(self.state_trans_sub, data)
+
         if self.cur_world is not None:
             activity = data.header.frame_id
+            self.update_current_world(activity)
+
             graph = self.cur_world.env.state.network.graph
 
             state = decode_state_message(data.state, graph)
             action = decode_action_message(data.action)
+
             next_state = decode_state_message(data.next_state, graph)
 
             # if not isinstance(action, SetPauseAction):
             self.state_transition_observation(
                 activity, state, action, next_state)
+
+            rospy.loginfo('State transition from {} to {} by {}:'.format(
+                state, action, next_state))
+            rospy.loginfo('Current world: {}'.format(self.cur_world))
+            rospy.loginfo('Collaboration-1 world: {}'.format(self.world))
+            rospy.loginfo('Collaboration-2 world: {}'.format(self.world2))
+            print()
 
     def state_transition_observation(
             self, activity, state, action, next_state):
@@ -806,6 +799,8 @@ class RoboticAgent(object):
     def tutorial_state_observation(self, state, action, next_state):
         """Process state transition observation for the tutorial."""
 
+        self.cur_world.act(action)
+
         # If first step: to draw.
         if state.step_no == 1 and next_state.step_no == 2:
             # Say the cost.
@@ -813,27 +808,27 @@ class RoboticAgent(object):
             self.express('point_activity')
             s = (
                 "This railway costs 3 francs!"
-                " In this game we consider the costs of the tracks:"
+                " In this game, we consider the costs of the tracks:"
                 "\nevery time we build a track, it costs something."
                 " We want to spend as little as we can.")
             self.say(s)
             self.emote('happy')
-            self.express('happy', is_blocking=True, speed=0.5)
-            delay = 2 if self.with_robot else 6
+            self.express('happy', is_blocking=True, speed=2)
+            delay = 0 if self.with_robot else 2
             rospy.sleep(delay)
 
             # Instruct to erase.
             self.help_text = ('Press the eraser button to'
                               ' remove all of the connections.')
-            s = ('Now, imagine you want to remove the connections and'
-                 ' start connecting again from \nscratch. For this, you'
+            s = ('Now, imagine you want to remove the connections, and'
+                 ' start connecting again, from \nscratch. For this, you'
                  ' can press the eraser button on the right. Try it!')
             self.say(s)
             delay = 0 if self.with_robot else 2
             rospy.sleep(delay)
 
             # Point to the screen.
-            self.express('point_human', is_blocking=True)
+            self.express('point_human', speed=1.5, is_blocking=True)
             self.set_pause(False)
 
         # If second step: to erase.
@@ -843,7 +838,7 @@ class RoboticAgent(object):
             self.set_robot_text('')
             self.help_text = ('Connect the mountains and '
                               'submit your connection.')
-            self.express('yes', is_blocking=True)
+            self.express('yes', speed=0.5)  # is_blocking=True
             s = ("Currently, you see there is no connection between"
                  " the mountains:\nminers can't go between them.")
             self.say(s, is_setting_text=False)
@@ -878,11 +873,8 @@ class RoboticAgent(object):
         elif activity == 'tutorial':
             self.cur_world = self.world_tutorial
         else:
+            self.cur_world = None
             return
-        print()
-        rospy.logwarn('World updated from {} to {}'.format(
-            self.cur_world, activity))
-        print()
 
     def collaboration_state_observation(
             self, activity, state, action, next_state):
@@ -929,8 +921,7 @@ class RoboticAgent(object):
 
         # Take an action if it is robot's turn.
         if Agent.ROBOT in next_state.agents:
-            # print('#### robot will act')
-            rospy.sleep(2)
+            rospy.sleep(1)
             self.act()
 
     def human_action_observation(self, state, action, next_state):
@@ -1061,7 +1052,6 @@ class RoboticAgent(object):
                      " a mine and dragging to another.")
             # Any non-initial agreement.
             else:
-                s = ''
                 if decision(0.7):
                     options = [
                         "Great to see that you agree.",
@@ -1071,7 +1061,14 @@ class RoboticAgent(object):
                         "Great! You agree!",
                         "Great, you agree with me!",
                     ]
-                    s += random.choice(options)
+                    s = random.choice(options)
+                else:
+                    options = [
+                        "Good!",
+                        "Great!",
+                    ]
+                    s = random.choice(options)
+
                 if decision(0.7):
                     options = [
                         "Then they are connected.",
@@ -1089,22 +1086,23 @@ class RoboticAgent(object):
                         "Then, we both {} it is a correct choice.".format(
                             verb),
                         "So, we both {} it is a correct one.".format(verb),
-                        # "Then, you think it is the right connection.",
-                        # "Then, you think it is a correct choice.",
-                        # "So, you think it is the right one.",
-                        # "So, you think we should do that too.",
                     ]
                     if decision(self.attrib_prob):
                         s += ' ' + random.choice(options)
 
-                c = 'Now' if decision(0.5) else 'Then'
+                if decision(0.5):  # 50%
+                    c = 'Now'
+                elif decision(0.5):  # 25%
+                    c = 'Then'
+                else:  # 25%
+                    c = 'So'
                 options = [
-                    "{} it is your turn: what should we do?".format(c),
+                    "{}, it is your turn: what should we do?".format(c),
                     "{}, you go: which ones should we connect?".format(c),
                     ("{}, it is your turn:"
                      " which mines shall we connect?").format(c),
                     "So, what should we do now?",
-                ]
+                ]                
                 s += '\n' + random.choice(options)
 
             # Construct a belief mismatch utterance.
@@ -1201,7 +1199,7 @@ class RoboticAgent(object):
                         beliefs, 'is_suggested')
                     u, v = e = [k for k, v in suggesteds.items() if v][0]
                     u_name, v_name = world.env.state.network.get_edge_name(e)
-              
+
                     edge_s = '{} to {}'.format(u_name, v_name)
 
                 except Exception as e:
@@ -1346,12 +1344,12 @@ class RoboticAgent(object):
                     s = ('Okay! We tried our best,'
                          ' but, we used up our chances.')
                     self.say(s)
-                delay = 2 if self.with_robot else 4
+                delay = 4 if self.with_robot else 4
                 rospy.sleep(delay)
 
                 # Set the next activity.
                 if self.cur_world.name == 'collaboration-1':
-                    self.update_current_world('collaboration-2')
+                    # self.update_current_world('collaboration-2')
                     self.set_activity('collaboration-2')
                 elif self.cur_world.name == 'collaboration-2':
                     self.set_activity('posttest-1')
@@ -1413,7 +1411,7 @@ class RoboticAgent(object):
 
                 # Set the next activity.
                 if self.cur_world.name == 'collaboration-1':
-                    self.update_current_world('collaboration-2')
+                    # self.update_current_world('collaboration-2')
                     self.set_activity('collaboration-2')
                 elif self.cur_world.name == 'collaboration-2':
                     self.set_activity('posttest-1')
@@ -1451,8 +1449,12 @@ class RoboticAgent(object):
         log_heard(self.activity_trans_sub, data)
         activity = data.next
 
-        self.is_instructing = activity not in self.instructed_activities
-        self.instructed_activities.add(activity)
+        # rospy.logwarn('Callback with {}'.format(activity))
+
+        if self.is_instructing:
+            self.instructed_activities.add(activity)
+        else:
+            self.is_instructing = activity not in self.instructed_activities
         # rospy.logwarn(self.instructed_activities)
 
         # if data.next != data.current:
@@ -1465,7 +1467,12 @@ class RoboticAgent(object):
         self.cur_activity = activity
         self.window.cur_activity_name = activity
 
+        # rospy.logwarn('instructed_activities {} -- {}'.format(
+        #     self.instructed_activities, self.is_instructing))
+
         self.activity_observation(activity)
+
+        self.is_instructing = False
 
     def activity_observation(self, activity):
         """Observe an activity transition.
@@ -1504,7 +1511,7 @@ class RoboticAgent(object):
         """React to the start of the hello/start activity."""
         self.set_pause(True)
         self.emote('happy_blinking')
-        self.express('hi', is_blocking=True, speed=1.4)
+        self.express('hi', speed=1.4)
         s = ("Hello! My name is Q.T.!"  # " Nice to meet you."
              # , and here is my friend Utku." \\pau=500\\
              " I can't wait to play with you."
@@ -1536,7 +1543,7 @@ class RoboticAgent(object):
         self.set_pause(True)
 
         # Introduce the environment.
-        self.express('point_activity')
+        self.express('point_activity', speed=0.5)
         rospy.sleep(1)
         s = ('Look at this! This is a map of Switzerland.'
              ' You see many mountains,'
@@ -1545,19 +1552,19 @@ class RoboticAgent(object):
         self.say(s)
 
         # Introduce the goal of spanningness.
-        self.express('swipe_right', is_blocking=True)
+        self.express('swipe_right')
         delay = 1 if self.with_robot else 5
         rospy.sleep(delay)
-        s = ('In this game, our goal is to build a railway network'
-             ' to\nhelp the miners go from any mine to any other.')
+        s = ('In this game, our goal is to build a railway network,'
+             ' to\nhelp the miners go from any mine, to any other.')
         self.say(s)
 
         # Introduce the goal of optimality.
-        self.express('challenge', is_blocking=True)
+        self.express('challenge')  # , is_blocking=True)
         delay = 1 if self.with_robot else 5
         rospy.sleep(delay)
         s = ('For this goal, we should try to spend\n'
-             'as little money as possible to build these railways!')
+             'as little money as possible, to build these railways!')
         self.say(s)
         self.express('clap', is_blocking=True, speed=1.5)
         delay = 2 if self.with_robot else 5
@@ -1574,22 +1581,22 @@ class RoboticAgent(object):
         self.set_pause(True)
 
         # Introduce the mines and the tracks.
-        self.express('point_activity')
+        self.express('point_activity', speed=0.5)
         s = ("Before we play together, let's see how to interact"
              " with the game. You see here\ntwo rare metal mines, with "
              "a possible connection between them, shown as a gray track.")
         self.say(s, is_setting_text=False)
-        delay = 0.5 if self.with_robot else 2
+        delay = 0.5 if self.with_robot else 1
         rospy.sleep(delay)
 
         # Introduce the goal.
-        self.express('swipe_left')
+        self.express('swipe_left', speed=0.5)
         s = ("Let's connect these two mines to each other,"
              " so that the miners can travel\nbetween them. For this, "
              "click on one mine, and go to the other without releasing!")
         self.say(s)
-        delay = 0.5 if self.with_robot else 2
-        rospy.sleep(delay)
+        delay = 0 if self.with_robot else 1
+        # rospy.sleep(delay)
         self.set_pause(False)
 
     def pretest_observation(self, activity):
@@ -1618,20 +1625,19 @@ class RoboticAgent(object):
             self.say(s)
 
             # Connectedess constraint.
-            self.express('point_activity')
+            self.express('point_activity', speed=0.5)
             s = ("You can only build from the ones you have connected,"
-                 " after you start")
+                 " after you start.")
             self.say(s)
 
             # Motivate and signal for the upcoming collaborative activity.
             delay = 0.5 if self.with_robot else 2
             rospy.sleep(delay)
-            self.express(
-                'point_human', is_blocking=True)
+            self.express('point_human', speed=0.5)
             s = ("Please give it a try by yourself, later, "
                  "we will do it together!")
             self.say(s)
-            self.express('clap')
+            self.express('clap', speed=1.5)
             self.set_pause(False)
 
         # Second pretest activity.
@@ -1667,7 +1673,7 @@ class RoboticAgent(object):
         elif '4' in activity:
             # Give the goal.
             self.set_pause(True)
-            self.express('hard_nod', is_blocking=True)
+            self.express('hard_nod', speed=0.5)  # , is_blocking=True)
             s = ("Okay, let's try for this one now."
                  " Connect them while spending as little as possible,"
                  "\nmake sure miners can travel between all of them."
@@ -1803,6 +1809,9 @@ class RoboticAgent(object):
         graph = self.cur_world.env.state.network.graph
         state = decode_state_message(resp.state, graph)
         if Agent.ROBOT in state.agents:
+            rospy.logwarn(
+                'robot will act at next state {} in world {}'.format(
+                    state, self.cur_world))
             self.act()
 
     def goodbye_observation(self):
@@ -1822,8 +1831,8 @@ class RoboticAgent(object):
              ' Thank you very much!')
         self.say(s)
 
-        self.express('wave')
-        self.emote('sad')
+        # self.express('wave')
+        # self.emote('sad')
 
         self.express('send_kiss')
         self.emote('kiss')

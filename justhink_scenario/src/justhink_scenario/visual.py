@@ -390,10 +390,12 @@ class AppWindow(pyglet.window.Window):
         state = self.cur_world.cur_state
         success = self.cur_world.act(action)
         next_state = self.cur_world.cur_state
+        name = self.cur_world.name
 
         # rospy.loginfo('')
         print()
-        rospy.loginfo('New event (on action execution):')
+        rospy.loginfo('New event (on action execution in world {}):'.format(
+            name))
         rospy.loginfo('State: {}'.format(state))
         rospy.loginfo('Action: {}'.format(action))
         rospy.loginfo('Next state: {}'.format(next_state))
