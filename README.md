@@ -126,7 +126,7 @@ rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/happy
 sourcejusthink
 sourceqtrobot
 
-NO=3 # Student No
+NO=7 # Student No
 rosrun justhink_robot run_recorder.sh $NO
 ```
 
@@ -152,15 +152,12 @@ sourceqtrobot
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
 # rm $ROS_LOG_DIR/agent_cognition.log
 export ROS_NAMESPACE=agent
+rosrun justhink_agent run_agent.py _mode:=aligning
 
 rosrun justhink_agent run_agent.py _mode:=optimal
 
 
 rosrun justhink_agent run_agent.py _mode:=greedy
-rosrun justhink_agent run_agent.py _mode:=aligning
-
-
-
 
 
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=optimal
@@ -174,7 +171,8 @@ rosrun justhink_agent run_agent.py _instruct:=True
 
 5) Start the situation node (i.e. the learning scenario) in a fourth terminal:
 ```
-source ~/catkin_ws/src/justhink-ros/.venv/bin/activate
+sourcejusthink
+sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_scenario)/data/log
 # rm $ROS_LOG_DIR/env_situation.log

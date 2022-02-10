@@ -81,6 +81,10 @@ class DrawingScene(WorldScene):
     #         self.win.publish_drawing_change(self._draw_from, self._draw_to)
 
 
+class DebriefingScene(DrawingScene, HumanIndividualWorldScene):
+    pass
+
+
 class TestScene(DrawingScene, HumanIndividualWorldScene):
 
     def on_mouse_release(self, x, y, button, modifiers, win):

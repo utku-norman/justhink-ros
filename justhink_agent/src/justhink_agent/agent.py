@@ -703,7 +703,7 @@ class RoboticAgent(object):
                             ("{}{}it is a good choice, then,"
                              " I agree.").format(
                                 me, common_s),
-                            "I definitely agree! {}{} it is correct!".format(
+                            "I definitely agree! {}{}it is correct!".format(
                                 me, common_s),
                         ]
 
@@ -956,6 +956,10 @@ class RoboticAgent(object):
 
                 beliefs = prev_mental_state.beliefs['me']['you']['world']
                 if beliefs[u][v]['is_optimal'] == 0.0:
+                    rospy.logwarn(
+                        ('Surprise event:'
+                         ' not optimal {}-{}').format(u, v))
+
                     options = [
                         'Oh, what a surprise!',
                         'Oh, really!',
@@ -1128,6 +1132,9 @@ class RoboticAgent(object):
                 beliefs = prev_mental_state.beliefs['me']['you']['world']
                 try:
                     if beliefs[u][v]['is_optimal'] == 0.0:
+                        rospy.logwarn(
+                            ('Surprise event:'
+                             ' not optimal {}-{}').format(u, v))
                         options = [
                             'Oh, what a surprise!',
                             'Oh, really!',
@@ -1208,6 +1215,10 @@ class RoboticAgent(object):
 
                 beliefs = prev_mental_state.beliefs['me']['you']['world']
                 if beliefs[u][v]['is_optimal'] == 1.0:
+                    rospy.logwarn(
+                        ('Surprise event:'
+                         ' optimal {}-{}').format(u, v))
+
                     options = [
                         'Oh, what a surprise!',
                         'Oh, really!',

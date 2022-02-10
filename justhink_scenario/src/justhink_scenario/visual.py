@@ -16,7 +16,8 @@ from justhink_world.domain.action import ResetAction
 from justhink_world.tools.graphics import ButtonWidget, Graphics, BLACK, WHITEA
 from justhink_world.tools.read import load_image_from_reference
 
-from .scenes import CoverScene, WelcomeScene, TestScene, CollaborativeScene
+from .scenes import CoverScene, WelcomeScene, TestScene, CollaborativeScene, \
+    DebriefingScene
 from .messages import decode_action_message, make_state_message, \
     make_state_transition_message, make_activity_transition_message, \
     make_button_message, make_drawing_message, ROBOT_SPEAKING
@@ -64,7 +65,7 @@ class AppWindow(pyglet.window.Window):
             activities += [(name, TestScene, worlds[name])]
         # Add a final bye scene.
         name = 'bye'
-        activities += [(name, CollaborativeScene, worlds[name])]
+        activities += [(name, DebriefingScene, worlds[name])]
 
         # Order the scenes (i.e. activities) and set to the scene.
         self._scene_order = list([name for name, _, _ in activities])
