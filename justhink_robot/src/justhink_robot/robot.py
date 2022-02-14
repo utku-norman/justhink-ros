@@ -39,6 +39,7 @@ gestures = {
     'sad': 'QT/emotions/sad',
     'happy': 'QT/emotions/happy',
     'hi': 'QT/hi',
+    'bye-bye': 'QT/bye-bye',
     'swipe_right': 'QT/swipe_right',
     'swipe_left': 'QT/swipe_left',
     'bored': 'QT/bored',
@@ -231,8 +232,8 @@ class PhysicalRobot(object):
         log_heard(self.emote_sub, data)
         new_data = get_robot_emotion_name(data.data)
         if new_data is not None:
-            log_publish(self.emote_pub, data)
-            self.emote_pub.publish(data)
+            log_publish(self.emote_pub, new_data)
+            self.emote_pub.publish(new_data)
 
     def home_all(self):
         rospy.loginfo('Homing all...')

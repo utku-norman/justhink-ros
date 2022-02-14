@@ -132,9 +132,11 @@ rostopic echo /qt_robot/joints/state
 
 rosrun image_view image_view image:=/camera/color/image_raw _autosize:=True
 rostopic hz /camera/color/image_raw
+rostopic echo --noarr /camera/color/image_raw
+
+
 
 sudo ip route add 192.168.100.2 via 192.168.4.1 dev wlp59s0
-rostopic echo --noarr /camera/color/image_raw
 
 
 rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
@@ -230,6 +232,11 @@ rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/no'"
 rosservice call /qt_robot/gesture/play 'QT/show_tablet' 1
 
 
+rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/Dance/Dance-1-1'"
+rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/Dance/Dance-1-4'"
+sleep 2
+
+
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-1' 1
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-2' 1
 rosservice call /qt_robot/gesture/play 'QT/Dance/Dance-1-3' 1
@@ -285,7 +292,7 @@ The ROS computation graph (as visualised by [rqt_graph](http://wiki.ros.org/rqt_
 
 	Commands sent for the robot to display an (e.g. facial) emotion expression. For example
 
-		rostopic pub -1 /agent/embodiment/emote std_msgs/String "data: 'QT/showing_smile'"
+		rostopic pub -1 /agent/embodiment/emote std_msgs/String "data: 'smile'"
 
 
 #### Published Topics

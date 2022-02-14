@@ -105,8 +105,13 @@ sudo apt-get install python3-catkin-tools
 
 0) Convenience, to add these to `.bash_aliases`:
 ```
+alias sshqtrp="ssh developer@192.168.4.1"
+alias sshqtpc="ssh qtrobot@192.168.100.2"
+
 alias sourceros="source /opt/ros/noetic/setup.bash; source ~/catkin_ws/devel/setup.bash"
+
 alias sourcejusthink="sourceros; source /opt/ros/noetic/setup.bash; source ~/catkin_ws/devel/setup.bash; source ~/catkin_ws/src/justhink-ros/.venv/bin/activate"
+
 alias sourceqtrobot="sourceros; export ROS_IP=192.168.4.114; export ROS_MASTER_URI=http://192.168.4.1:11311"
 ```
 
@@ -118,46 +123,76 @@ rosservice call /qt_robot/setting/setVolume 80    # for experiment
 # Test robot speech, gesture and facial expression topics.
 rostopic pub -1 /qt_robot/speech/say std_msgs/String "data: 'Hi'"
 rostopic pub -1 /qt_robot/emotion/show std_msgs/String "data: 'QT/happy'"
-rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'epfl/old_QT/happy'"
+rostopic pub -1 /qt_robot/emotion/show std_msgs/String "data: 'QT/kiss'"
+rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/happy'"
 ```
 
-2) Start the logger in a terminal:
+2) Start the ROS logger in a terminal:
 ```
 sourcejusthink
 sourceqtrobot
 
-NO=7 # Student No
-rosrun justhink_robot run_recorder.sh $NO
+NO=13 # Student No
+rosrun justhink_robot run_justhink_recorder.sh $NO
 ```
 
-3) Start the robot node in another terminal:
+
+3) start screen recording in another terminal:
+```
+sourcejusthink
+
+NO=13 # Student No
+rosrun justhink_scenario run_screen_recorder.sh $NO
+```
+
+
+4) start robot side logging in another terminal:
+```
+sshqtpc
+
+NO=13 # Student No
+
+cd justhink/
+run_qtrobot_recorder.sh
+
+# ssh qtrobot@qtpc
+# cat /home/qtrobot/robot/autostart/autostart_screens.sh
+```
+
+
+5) Start the robot node in another terminal:
 ```
 sourcejusthink
 sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_robot)/data/log
 # rm $ROS_LOG_DIR/agent_embodiment.log
+
 export ROS_NAMESPACE=agent
 rosrun justhink_robot run_robot.py
 
 # Test
 rostopic pub -1 /agent/embodiment/say std_msgs/String "data: 'Hi'"
+rosservice call /qt_robot/motors/home "['HeadPitch', 'HeadYaw', 'left_arm', 'right_arm']"  # Home all
 ```
 
-4) Start the agent node in a third terminal:
+
+6) Start the agent node in a third terminal:
 ```
 sourcejusthink
 sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
 # rm $ROS_LOG_DIR/agent_cognition.log
-export ROS_NAMESPACE=agent
-rosrun justhink_agent run_agent.py _mode:=aligning
 
+export ROS_NAMESPACE=agent
 rosrun justhink_agent run_agent.py _mode:=optimal
 
-
 rosrun justhink_agent run_agent.py _mode:=greedy
+
+rosrun justhink_agent run_agent.py _mode:=aligning
+
+
 
 
 rosrun justhink_agent run_agent.py _instruct:=False _mode:=optimal
@@ -169,15 +204,17 @@ rosrun justhink_agent run_agent.py _instruct:=True
 
 ```
 
-5) Start the situation node (i.e. the learning scenario) in a fourth terminal:
+
+7) Start the situation node (i.e. the learning scenario) in a fourth terminal:
 ```
 sourcejusthink
 sourceqtrobot
 
 export ROS_LOG_DIR=$(rospack find justhink_scenario)/data/log
 # rm $ROS_LOG_DIR/env_situation.log
-export ROS_NAMESPACE=env
 
+
+export ROS_NAMESPACE=env
 rosrun justhink_scenario run_scenario.py
 
 
@@ -191,6 +228,13 @@ rosrun justhink_scenario run_scenario.py _robot_text:=True
 
 
 
+Backup
+```
+rsync -avuzh --progress qtrobot@192.168.100.2:/home/qtrobot/justhink ~/data
+
+sshqtpc
+
+```
 
 
 ### Running with a touch screen

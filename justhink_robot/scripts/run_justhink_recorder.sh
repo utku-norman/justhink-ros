@@ -1,4 +1,4 @@
-echo "Starting JUSThink interaction logger..."
+echo "Starting JUSThink ROS logger..."
 
 # Define a timestamp function
 timestamp() {

@@ -1829,7 +1829,8 @@ class RoboticAgent(object):
         """React to the start of the goodbye activity."""
         self.help_text = None
 
-        s = ('Its time to say goodbye....'
+        self.express('bye-bye')
+        s = ('Its time to go....'
              '\nI loved playing with you, I hope you enjoyed it too! '
              ' Goodbye!')
         self.say(s)
@@ -1837,16 +1838,14 @@ class RoboticAgent(object):
         delay = 1 if self.with_robot else 4
         rospy.sleep(delay)
 
+        self.express('point_human')
         s = ('Oh, before you go, could you please answer some questions'
              '\nthat my friend Utku would like to ask you?'
              ' Thank you very much!')
         self.say(s)
 
-        # self.express('wave')
-        # self.emote('sad')
-
-        self.express('send_kiss')
         self.emote('kiss')
+        self.express('send_kiss')
 
     # Generate robot speech, gestures and emotions #########################
 
