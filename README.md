@@ -132,7 +132,7 @@ rostopic pub -1 /qt_robot/gesture/play std_msgs/String "data: 'QT/happy'"
 sourcejusthink
 sourceqtrobot
 
-NO=13 # Student No
+NO=15 # Student No
 rosrun justhink_robot run_justhink_recorder.sh $NO
 ```
 
@@ -141,7 +141,7 @@ rosrun justhink_robot run_justhink_recorder.sh $NO
 ```
 sourcejusthink
 
-NO=13 # Student No
+NO=15 # Student No
 rosrun justhink_scenario run_screen_recorder.sh $NO
 ```
 
@@ -150,13 +150,10 @@ rosrun justhink_scenario run_screen_recorder.sh $NO
 ```
 sshqtpc
 
-NO=13 # Student No
+NO=15 # Student No
 
 cd justhink/
-run_qtrobot_recorder.sh
-
-# ssh qtrobot@qtpc
-# cat /home/qtrobot/robot/autostart/autostart_screens.sh
+./run_qtrobot_recorder.sh
 ```
 
 

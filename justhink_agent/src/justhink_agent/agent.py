@@ -58,6 +58,19 @@ class RoboticAgent(object):
         self.mode = mode
         print()
 
+        # Robot speech speed.
+        param_name = '~speed'
+        speed = rospy.get_param(param_name, 75)  # '82')
+        try:
+            speed = int(speed)
+        except Exception as e:
+            print(e)
+            raise ValueError
+        if rospy.has_param(param_name):
+            rospy.delete_param(param_name)
+        rospy.logwarn("Agent will speak at speed '{}'.".format(speed))
+        print()
+
         param_name = '~with_robot'
         self.with_robot = rospy.get_param(param_name, 'auto')
         if rospy.has_param(param_name):
@@ -122,7 +135,7 @@ class RoboticAgent(object):
         # Configure the robot speech.
         if self.with_robot:
             try:
-                opts = {'speed': 82, 'language': self.lang}
+                opts = {'speed': speed, 'language': self.lang}
                 resp = self.call_configure_speech(**opts)
                 if resp.status:
                     s = 'Robot speech configured: speed={}, lang={}'.format(
@@ -1839,12 +1852,13 @@ class RoboticAgent(object):
         rospy.sleep(delay)
 
         self.express('point_human')
+        
         s = ('Oh, before you go, could you please answer some questions'
              '\nthat my friend Utku would like to ask you?'
              ' Thank you very much!')
         self.say(s)
 
-        self.emote('kiss')
+        self.emote('happy_blinking')
         self.express('send_kiss')
 
     # Generate robot speech, gestures and emotions #########################
