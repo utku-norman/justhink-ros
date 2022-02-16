@@ -283,6 +283,10 @@ class RoboticAgent(object):
         """TODO: docstring for act"""
 
         world = self.cur_world
+        if world is None:
+            rospy.logwarn('Current world is none, act command is ignored.')
+            return
+        
         state = world.env.state
 
         # Plan for the next action as if solving alone.
@@ -1372,11 +1376,12 @@ class RoboticAgent(object):
                 rospy.sleep(delay)
 
                 # Set the next activity.
-                if self.cur_world.name == 'collaboration-1':
-                    # self.update_current_world('collaboration-2')
-                    self.set_activity('collaboration-2')
-                elif self.cur_world.name == 'collaboration-2':
-                    self.set_activity('posttest-1')
+                if self.cur_world is not None:
+                    if self.cur_world.name == 'collaboration-1':
+                        # self.update_current_world('collaboration-2')
+                        self.set_activity('collaboration-2')
+                    elif self.cur_world.name == 'collaboration-2':
+                        self.set_activity('posttest-1')
             else:
                 # Report the result: failure.
                 self.express('sad')

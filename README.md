@@ -174,7 +174,7 @@ rosservice call /qt_robot/motors/home "['HeadPitch', 'HeadYaw', 'left_arm', 'rig
 ```
 
 
-6) Start the agent node in a third terminal:
+6) Start the agent node in another terminal:
 ```
 sourcejusthink
 sourceqtrobot
@@ -202,7 +202,7 @@ rosrun justhink_agent run_agent.py _instruct:=True
 ```
 
 
-7) Start the situation node (i.e. the learning scenario) in a fourth terminal:
+7) Start the situation node (i.e. the learning scenario) in another terminal:
 ```
 sourcejusthink
 sourceqtrobot
