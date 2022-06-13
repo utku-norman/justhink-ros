@@ -1,4 +1,4 @@
-# ROS2 Wrappers for JUSThink Human-Robot Pedagogical Scenario
+# ROS Wrappers for JUSThink Human-Robot Pedagogical Scenario
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
