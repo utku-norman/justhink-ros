@@ -79,53 +79,6 @@ catkin build justhink_agent
 from justhink_agent.agent import RoboticAgent
 ```
 
-## Usage
-
-### Running the JUSThink Human-Agent Scenario (without a physical robot)
-
-1) In a terminal, start the 'roscore':
-```
-roscore
-```
-
-2) (optional) In another terminal, start logging:
-```
-NO=1 # Student No
-rosrun justhink_agent run_recorder.sh $NO
-```
-
-3) In another terminal, start the human application node.
-```
-source $JUSTHINK_WORLD_DIR/venv/bin/activate
-
-export ROS_LOG_DIR=$(rospack find justhink_scenario)/data/log
-rm $ROS_LOG_DIR/env_situation.log
-
-export ROS_NAMESPACE=env
-rosrun justhink_scenario run_scenario.py
-
-
-# Others.
-rosrun justhink_scenario run_scenario.py _robot_text:=True
-rosservice call /env/cognition/set_logger_level "{logger: 'rosout', level: 'debug'}"
-```
-
-4) In another terminal, start this robot behaviour node:
-```
-# JUSTHINK_WORLD_DIR points to the location of the justhink_world source code.
-source $JUSTHINK_WORLD_DIR/venv/bin/activate
-
-export ROS_LOG_DIR=$(rospack find justhink_agent)/data/log
-rm $ROS_LOG_DIR/agent_cognition.log
-
-export ROS_NAMESPACE=agent
-rosrun justhink_agent run_agent.py _instruct:=False
-
-
-
-rosrun justhink_agent run_agent.py _instruct:=True _with_robot:=False
-```
-
 ### Useful Commands
 
 Verbose diagnostics logging.

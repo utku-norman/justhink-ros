@@ -4,8 +4,13 @@
 		{
 			"path": ".",
 			"folder_exclude_patterns": [".venv/lib*", ".venv/bin*", ".venv/include*", ".venv/share", "__pycache__", "justhink_world.egg-info"],
-			"binary_file_patterns": ["*.png", "*.jpg", "*.gif", "*.svg", "*.pickle"],
+			"binary_file_patterns": ["*.bag", "*.png", "*.jpg", "*.gif", "*.svg", "*.pickle"],
 		}
-
-	]
+	],
+    "settings":
+    {
+        "indent_style": 4,
+        "indent_size": 4,
+        "tab_size": 4
+    },
 }
