@@ -4,7 +4,7 @@
 
 ## Overview
 
-This repository contains the [ROS] packages to govern a complete human-robot interaction scenario for school children, named [JUSThink](https://www.epfl.ch/labs/chili/index-html/research/animatas/justhink/). The scenario aims to improve their computational thinking skills by applying abstract and algorithmic reasoning to solve an unfamiliar problem on networks: it consists of individual (e.g. as in a test for assessment) and collaborative (with an artificial agent e.g. a robot) activities. This code has been used to represent the collaborative activity and the tests in [[1]](#references): details about these implemented activities and their sequence in the scenario are described in [[1]](#references).
+This repository contains the [ROS] packages to govern a complete human-robot interaction scenario for school children, named [JUSThink](https://www.epfl.ch/labs/chili/index-html/research/animatas/justhink/). The scenario aims to improve their computational thinking skills by applying abstract and algorithmic reasoning to solve an unfamiliar problem on networks: it consists of individual (e.g. as in a test for assessment) and collaborative (with an artificial agent e.g. a robot) activities. This code has been to govern the interaction in [[1]](#references).
 
 The ROS packages that are included in this repository are:
 
@@ -13,9 +13,9 @@ The ROS packages that are included in this repository are:
 * [justhink_robot](justhink_robot) package: manifests the robot behavior so that it is enacted by a particular robot (e.g. a [QTrobot] in our implementation, to enact the speech, gestures, etc.)
 * [justhink_msgs](justhink_msgs) package: defines the custom ROS messages and services, via which these ROS nodes communicate
 
-The pedagogical scenario consists of a sequence of activities: cover, introduction, tutorial, five individual activities (pretest), two collaborative activities, five individual activities (posttest), and a goodbye.
+The pedagogical scenario consists of a sequence of activities: cover, introduction, tutorial, five individual activities (pretest), two collaborative activities, five individual activities (posttest), and a goodbye: see [[1]](#references) for details.
 
-* In an individual activity, a human learner is given a network of gold mines with possible positions for railway tracks, where each track if it is built connects one mine to another. The cost of each track is visible. The goal is to collect the gold by connecting the gold mines to each other, while spending as little as possible to build the tracks.
+* In an individual activity, a human learner is given a network of rare metal mines with possible positions for railway tracks, where each track if it is built connects one mine to another. The cost of each track is visible. The goal is to collect the rare metal by connecting the rare metal mines to each other, while spending as little as possible to build the tracks.
 * In a collaborative activity, the human and the robot as (same-status) peers collaboratively construct a solution to this problem by deciding together which tracks to build, and submit it as their solution to the system. They take turns in suggesting to select a specific connection, where the other either agrees or disagrees with this suggestion. A track will be built only if it is suggested by one and accepted by the other.
 
 Here is a screenshot from the collaborative activity:
@@ -66,7 +66,7 @@ If you use this work in an academic context, please cite the following publicati
 #### Dependencies
 
 * [Robot Operating System (ROS)](https://docs.ros.org) (middleware for robotics)
-* [justhink_world](https://github.com/utku-norman/justhink_world) to represent an activity as a world/problem with a state (that depends on [pomdp_py](https://h2r.github.io/pomdp-py/html/), [networkx](https://networkx.org/), [pyglet](https://pyglet.readthedocs.io/en/latest/), [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), and [pqdict](https://pypi.org/project/pqdict/))
+* [justhink_world](https://github.com/utku-norman/justhink_world) to represent the activities as worlds/problems with a state (that depends on [pomdp_py](https://h2r.github.io/pomdp-py/html/), [networkx](https://networkx.org/), [pyglet](https://pyglet.readthedocs.io/en/latest/), [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), and [pqdict](https://pypi.org/project/pqdict/))
 
 #### Building
 
@@ -90,9 +90,7 @@ cd ~/catkin_ws/src
 git clone https://github.com/utku-norman/justhink-ros.git
 ```
 
-4) For the dependencies, create a new Python [virtual environment](https://docs.python.org/3/tutorial/venv.html) and activate it. 
-Do so in the same folder. 
-Note that the folder name `venv` is [git-ignored](https://git-scm.com/docs/gitignore)):
+4) For the dependencies, create a new Python [virtual environment](https://docs.python.org/3/tutorial/venv.html) and activate it; do so in the same folder. Note that the folder name `.venv` is [git-ignored](https://git-scm.com/docs/gitignore)):
 ```
 cd ~/catkin_ws/src/justhink-ros
 
@@ -152,6 +150,11 @@ Check the installation for `justhink_scenario` (in a Python interpreter):
 from justhink_scenario import show_scenario
 ```
 
+Check for `justhink_agent`:
+```
+from justhink_agent.agent import RoboticAgent
+```
+
 Check for `justhink_robot`:
 ```
 from justhink_robot.robot import PhysicalRobot
@@ -165,6 +168,9 @@ from justhink_robot.robot import PhysicalRobot
 
 1) In a terminal, start the 'roscore':
 ```
+source /opt/ros/noetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+
 roscore
 ```
 
@@ -195,11 +201,17 @@ Note that the collaborative part need at least the agent node running.
 
 1) In a terminal, start the 'roscore':
 ```
+source /opt/ros/noetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+
 roscore
 ```
 
 2) (optional) In another terminal, start logging:
 ```
+source /opt/ros/noetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+
 NO=1 # Student No
 rosrun justhink_agent run_recorder.sh $NO
 ```
@@ -238,7 +250,7 @@ rosrun justhink_agent run_agent.py _instruct:=True _with_robot:=False
 
 ### Complete Scenario with a QTrobot
 
-1) For convenience, add the environment variables to `.bash_aliases`:
+1) For convenience, add the following aliases and environment variables to `.bash_aliases`:
 ```
 alias sshqtrp="ssh developer@192.168.4.1"
 alias sshqtpc="ssh qtrobot@192.168.100.2"
@@ -676,8 +688,8 @@ This node has with global name set to `/agent/embodiment`, and it is implemented
 
     Configure robot speech: language, pitch, speed
 
-        # rosservice call /qt_robot/speech/config en-US 100 80
         rosservice call /agent/embodiment/configure_speech en-US 100 80
+        # rosservice call /qt_robot/speech/config en-US 100 80 ## e.g., the corresponding call
         
 * **`stop_say`** ([justhink_msgs/StopSay](justhink_msgs/srv/StopSay.srv))
 
