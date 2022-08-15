@@ -46,7 +46,6 @@ class AppWindow(pyglet.window.Window):
         activities = []
         activities += [('cover', CoverScene, None)]
         activities += [('welcome', WelcomeScene, None)]
-        # activities += [('profile', ProfileScene, None)]
         activities += [('intro', IntroWorldScene, worlds['intro'])]
         activities += [('tutorial', TutorialWorldScene, worlds['tutorial'])]
         # Add the pretests.
@@ -71,7 +70,7 @@ class AppWindow(pyglet.window.Window):
         # Create the scenes for the activities.
         scenes = dict()
         for name, scene_type, world in activities:
-            rospy.loginfo('Initialising {} activity...'.format(name))
+            rospy.loginfo('Initializing {} activity...'.format(name))
             scenes[name] = scene_type(
                 name=name, width=width, height=height, world=world)
         self._scenes = scenes
@@ -82,15 +81,6 @@ class AppWindow(pyglet.window.Window):
         self._is_shift = False
         self._is_alt = False
         self._is_a = False
-
-        # # Set Name of the current and hence initial activity.
-        # self._cur_scene_name = 'cover'
-        # # self._cur_scene_name = 'welcome'
-        # # self._cur_scene_name = 'tutorial'
-        # # self._cur_scene_name = 'pretest-1'
-        # # self._cur_scene_name = 'pretest-5'
-        # self._cur_scene_name = 'collaboration-1'
-        # # self._cur_scene_name = 'collaboration-2'
 
         # Agent mode or condition for experimentation.
         param_name = '~entry'
@@ -107,13 +97,11 @@ class AppWindow(pyglet.window.Window):
         self._init_ros()
         rospy.on_shutdown(self.on_close)
 
-        # Initialising pyglet window.
+        # Initializing pyglet window.
         rospy.loginfo('Creating the window...')
         style = pyglet.window.Window.WINDOW_STYLE_BORDERLESS
         super().__init__(width, height, caption, style=style)
 
-        # scenario_16x16
-        # scenario_32x32
         icon1 = load_image_from_reference(
             image_container.joinpath('scenario_128x128.png'))
         icon2 = load_image_from_reference(
@@ -148,9 +136,6 @@ class AppWindow(pyglet.window.Window):
         self.update()
 
         self.set_scene(self.cur_scene_name)
-        # set scene already publishes
-        # self.publish_activity_transition(
-        #     self.cur_scene_name, self.cur_scene_name)
 
         rospy.loginfo('Human application window is ready!')
         print()
@@ -218,9 +203,7 @@ class AppWindow(pyglet.window.Window):
 
         if animated and not self._is_animating:
             self._is_animating = True
-            # pyglet.clock.unschedule(self.animate_transition)
             pyglet.clock.schedule(self.animate_transition, name=name)
-            # self.graphics.help_button.set_state(ButtonWidget.DISABLED)
         else:
             # Publish the activity change if shift is not pressed.
             if not self._is_shift:
@@ -271,20 +254,6 @@ class AppWindow(pyglet.window.Window):
                         rospy.loginfo('Service {} not found'.format(
                             service_name))
                         rospy.loginfo('Ignoring repeat speech press.')
-
-            # # Process help button.
-            # if self.graphics.help_button.state == ButtonWidget.ENABLED:
-            #     service_name = '/agent/cognition/request_help'
-            #     if self.graphics.help_button.check_hit(x, y):
-            #         if service_name in rosservice.get_service_list():
-            #             self.graphics.help_button.set_state(
-            #                 ButtonWidget.SELECTED)
-            #             pyglet.clock.schedule_once(
-            #                 self._robot_help_callback, 1)
-            #         else:
-            #             rospy.loginfo('Service {} not found'.format(
-            #                 service_name))
-            #             rospy.loginfo('Ignoring help button press.')
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.publish_mouse_drag(x, y, buttons, dx=dx, dy=dy)
@@ -391,7 +360,6 @@ class AppWindow(pyglet.window.Window):
         next_state = self.cur_world.cur_state
         name = self.cur_world.name
 
-        # rospy.loginfo('')
         print()
         rospy.loginfo('New event (on action execution in world {}):'.format(
             name))
@@ -399,7 +367,6 @@ class AppWindow(pyglet.window.Window):
         rospy.loginfo('Action: {}'.format(action))
         rospy.loginfo('Next state: {}'.format(next_state))
         print()
-        # rospy.loginfo('')
 
         if success:
             next_state = self.cur_world.cur_state
@@ -473,20 +440,6 @@ class AppWindow(pyglet.window.Window):
             scale=0.12, batch=batch, group=groups[8])
         graphics.repeat_button = button
         graphics.buttons['repeat'] = button
-
-        # # Create the help button.
-        # button_pads, scale = (100, 180), 0.2
-        # paths = {
-        #     ButtonWidget.ENABLED: c.joinpath('help_enabled.png'),
-        #     ButtonWidget.DISABLED: c.joinpath('help_disabled.png'),
-        #     ButtonWidget.SELECTED: c.joinpath('help_selected.png'),
-        # }
-        # button = ButtonWidget(
-        #     x=button_pads[0], y=height-button_pads[1], paths=paths,
-        #     state=ButtonWidget.DISABLED, scale=scale, batch=batch,
-        #     group=groups[1])
-        # graphics.help_button = button
-        # graphics.buttons['help'] = button
 
         self.graphics = graphics
 
@@ -624,7 +577,6 @@ class AppWindow(pyglet.window.Window):
         try:
             self.update_robot_text(data.text)
             self.graphics.repeat_button.set_state(ButtonWidget.ENABLED)
-            # self.graphics.help_button.set_state(ButtonWidget.ENABLED)
             resp = True
         except Exception as e:
             rospy.logerr(e)
@@ -652,7 +604,6 @@ class AppWindow(pyglet.window.Window):
 
     def _robot_repeat_callback(self, dt):
         pyglet.clock.unschedule(self._robot_repeat_callback)
-        # log_service_call(self.repeat_speech_service)
         resp = self.repeat_speech_service()
         log_service_response(self.repeat_speech_service, None, resp)
 
@@ -662,8 +613,6 @@ class AppWindow(pyglet.window.Window):
         pyglet.clock.unschedule(self._robot_help_callback)
         resp = self.request_help_service()
         log_service_response(self.request_help_service, None, resp)
-
-        # self.graphics.help_button.set_state(ButtonWidget.ENABLED)
 
     def make_mouse_message(self, x, y, buttons=mouse.LEFT, dx=0, dy=0):
         self.mouse_message.header.frame_id = self.cur_scene_name

@@ -2002,7 +2002,7 @@ class RoboticAgent(object):
 
         # Initialize the services to request from the scenario.
         print()
-        rospy.loginfo('Initialising connection with human application node...')
+        rospy.loginfo('Initializing connection with human application node...')
         self.call_act = make_service_proxy(
             '/env/situation/act',
             justhink_msgs.srv.Act)

@@ -65,8 +65,6 @@ def decode_action_message(data):
         action = SuggestPickAction(edge, agent=agent)
     elif data.type == justhink_msgs.msg.Action.TYPE_PICK:
         action = PickAction(edge, agent=agent)
-    # elif data.type == justhink_msgs.msg.Action.TYPE_UNPICK:
-    #     action = UnpickAction(edge, agent=agent)
 
     elif data.type == justhink_msgs.msg.Action.TYPE_ATTEMPT_SUBMIT:
         action = AttemptSubmitAction(agent=agent)
@@ -128,9 +126,6 @@ def make_action_message(action) -> justhink_msgs.msg.Action:
     elif isinstance(action, PickAction):
         message.type = justhink_msgs.msg.Action.TYPE_PICK
         u, v = action.edge
-    # elif isinstance(action, UnpickAction):
-    #     message.type = justhink_msgs.msg.Action.TYPE_UNPICK
-    #     u, v = action.edge
 
     elif isinstance(action, AttemptSubmitAction):
         message.type = justhink_msgs.msg.Action.TYPE_ATTEMPT_SUBMIT
@@ -222,24 +217,3 @@ def make_state_transition_message(
     message.next_state = make_state_message(next_state)
 
     return message
-
-
-# def make_profile_message(self):
-#     message = justhink_msgs.msg.Profile()
-
-#     message.header.frame_id = 'profile'
-#     message.header.stamp = rospy.Time.now()
-#     message.header.seq = message.header.seq + 1
-
-#     message.valid = self.check_done()
-
-#     message.name = self._name_field.get_content()
-#     message.year = str(self._year_field.get_content())
-#     if self._male_button.state == 'selected':
-#         message.gender = 'male'
-#     elif self._female_button.state == 'selected':
-#         message.gender = 'female'
-#     else:
-#         message.gender = '?'
-
-#     return message
