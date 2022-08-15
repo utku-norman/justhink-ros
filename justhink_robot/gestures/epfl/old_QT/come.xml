@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<gesture>
+    <name>QT/come</name>
+    <parts>
+        <part>right_arm</part>
+    </parts>
+    <duration>4.95</duration>
+    <waypoints count="100">
+        <point time="1606580803570746638">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-87.30</RightShoulderPitch>
+            <RightShoulderRoll>-59.30</RightShoulderRoll>
+        </point>
+        <point time="1606580803622043669">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-86.30</RightShoulderPitch>
+            <RightShoulderRoll>-59.90</RightShoulderRoll>
+        </point>
+        <point time="1606580803672923305">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-85.00</RightShoulderPitch>
+            <RightShoulderRoll>-60.60</RightShoulderRoll>
+        </point>
+        <point time="1606580803720899763">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-83.10</RightShoulderPitch>
+            <RightShoulderRoll>-61.20</RightShoulderRoll>
+        </point>
+        <point time="1606580803771538044">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-79.80</RightShoulderPitch>
+            <RightShoulderRoll>-62.50</RightShoulderRoll>
+        </point>
+        <point time="1606580803821014034">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-75.90</RightShoulderPitch>
+            <RightShoulderRoll>-63.50</RightShoulderRoll>
+        </point>
+        <point time="1606580803872339971">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-70.70</RightShoulderPitch>
+            <RightShoulderRoll>-64.50</RightShoulderRoll>
+        </point>
+        <point time="1606580803922094555">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-65.50</RightShoulderPitch>
+            <RightShoulderRoll>-65.50</RightShoulderRoll>
+        </point>
+        <point time="1606580803971976638">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-59.90</RightShoulderPitch>
+            <RightShoulderRoll>-66.50</RightShoulderRoll>
+        </point>
+        <point time="1606580804021386794">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-55.00</RightShoulderPitch>
+            <RightShoulderRoll>-67.80</RightShoulderRoll>
+        </point>
+        <point time="1606580804071058148">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-50.50</RightShoulderPitch>
+            <RightShoulderRoll>-68.70</RightShoulderRoll>
+        </point>
+        <point time="1606580804121125179">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-45.60</RightShoulderPitch>
+            <RightShoulderRoll>-70.00</RightShoulderRoll>
+        </point>
+        <point time="1606580804171984971">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-41.00</RightShoulderPitch>
+            <RightShoulderRoll>-71.00</RightShoulderRoll>
+        </point>
+        <point time="1606580804221599346">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-35.80</RightShoulderPitch>
+            <RightShoulderRoll>-72.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804271295909">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-29.90</RightShoulderPitch>
+            <RightShoulderRoll>-73.00</RightShoulderRoll>
+        </point>
+        <point time="1606580804320902731">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-24.40</RightShoulderPitch>
+            <RightShoulderRoll>-73.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804371536013">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-19.50</RightShoulderPitch>
+            <RightShoulderRoll>-73.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804421823408">
+            <RightElbowRoll>-35.20</RightElbowRoll>
+            <RightShoulderPitch>-16.30</RightShoulderPitch>
+            <RightShoulderRoll>-73.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804471723981">
+            <RightElbowRoll>-35.50</RightElbowRoll>
+            <RightShoulderPitch>-14.90</RightShoulderPitch>
+            <RightShoulderRoll>-73.60</RightShoulderRoll>
+        </point>
+        <point time="1606580804521547783">
+            <RightElbowRoll>-35.80</RightElbowRoll>
+            <RightShoulderPitch>-15.30</RightShoulderPitch>
+            <RightShoulderRoll>-74.00</RightShoulderRoll>
+        </point>
+        <point time="1606580804571115544">
+            <RightElbowRoll>-37.40</RightElbowRoll>
+            <RightShoulderPitch>-16.30</RightShoulderPitch>
+            <RightShoulderRoll>-74.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804621145752">
+            <RightElbowRoll>-40.00</RightElbowRoll>
+            <RightShoulderPitch>-16.90</RightShoulderPitch>
+            <RightShoulderRoll>-74.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804671410596">
+            <RightElbowRoll>-44.00</RightElbowRoll>
+            <RightShoulderPitch>-16.90</RightShoulderPitch>
+            <RightShoulderRoll>-74.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804720962471">
+            <RightElbowRoll>-49.80</RightElbowRoll>
+            <RightShoulderPitch>-16.60</RightShoulderPitch>
+            <RightShoulderRoll>-74.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804771802575">
+            <RightElbowRoll>-56.70</RightElbowRoll>
+            <RightShoulderPitch>-16.60</RightShoulderPitch>
+            <RightShoulderRoll>-73.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804821337002">
+            <RightElbowRoll>-64.20</RightElbowRoll>
+            <RightShoulderPitch>-16.30</RightShoulderPitch>
+            <RightShoulderRoll>-72.60</RightShoulderRoll>
+        </point>
+        <point time="1606580804870923356">
+            <RightElbowRoll>-71.00</RightElbowRoll>
+            <RightShoulderPitch>-15.60</RightShoulderPitch>
+            <RightShoulderRoll>-71.30</RightShoulderRoll>
+        </point>
+        <point time="1606580804922194919">
+            <RightElbowRoll>-76.90</RightElbowRoll>
+            <RightShoulderPitch>-14.90</RightShoulderPitch>
+            <RightShoulderRoll>-70.40</RightShoulderRoll>
+        </point>
+        <point time="1606580804971058252">
+            <RightElbowRoll>-81.50</RightElbowRoll>
+            <RightShoulderPitch>-14.30</RightShoulderPitch>
+            <RightShoulderRoll>-69.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805020396012">
+            <RightElbowRoll>-84.40</RightElbowRoll>
+            <RightShoulderPitch>-14.30</RightShoulderPitch>
+            <RightShoulderRoll>-69.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805070936689">
+            <RightElbowRoll>-83.70</RightElbowRoll>
+            <RightShoulderPitch>-14.60</RightShoulderPitch>
+            <RightShoulderRoll>-70.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805121692210">
+            <RightElbowRoll>-83.70</RightElbowRoll>
+            <RightShoulderPitch>-15.30</RightShoulderPitch>
+            <RightShoulderRoll>-71.30</RightShoulderRoll>
+        </point>
+        <point time="1606580805171932419">
+            <RightElbowRoll>-83.40</RightElbowRoll>
+            <RightShoulderPitch>-14.90</RightShoulderPitch>
+            <RightShoulderRoll>-71.00</RightShoulderRoll>
+        </point>
+        <point time="1606580805221414502">
+            <RightElbowRoll>-83.40</RightElbowRoll>
+            <RightShoulderPitch>-14.60</RightShoulderPitch>
+            <RightShoulderRoll>-70.00</RightShoulderRoll>
+        </point>
+        <point time="1606580805271150439">
+            <RightElbowRoll>-82.80</RightElbowRoll>
+            <RightShoulderPitch>-14.00</RightShoulderPitch>
+            <RightShoulderRoll>-68.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805320813148">
+            <RightElbowRoll>-81.50</RightElbowRoll>
+            <RightShoulderPitch>-13.30</RightShoulderPitch>
+            <RightShoulderRoll>-67.40</RightShoulderRoll>
+        </point>
+        <point time="1606580805371472575">
+            <RightElbowRoll>-78.80</RightElbowRoll>
+            <RightShoulderPitch>-12.70</RightShoulderPitch>
+            <RightShoulderRoll>-66.80</RightShoulderRoll>
+        </point>
+        <point time="1606580805422977262">
+            <RightElbowRoll>-74.60</RightElbowRoll>
+            <RightShoulderPitch>-13.00</RightShoulderPitch>
+            <RightShoulderRoll>-66.80</RightShoulderRoll>
+        </point>
+        <point time="1606580805471396585">
+            <RightElbowRoll>-70.00</RightElbowRoll>
+            <RightShoulderPitch>-13.00</RightShoulderPitch>
+            <RightShoulderRoll>-66.80</RightShoulderRoll>
+        </point>
+        <point time="1606580805522021950">
+            <RightElbowRoll>-63.80</RightElbowRoll>
+            <RightShoulderPitch>-13.00</RightShoulderPitch>
+            <RightShoulderRoll>-67.10</RightShoulderRoll>
+        </point>
+        <point time="1606580805571860231">
+            <RightElbowRoll>-57.30</RightElbowRoll>
+            <RightShoulderPitch>-13.30</RightShoulderPitch>
+            <RightShoulderRoll>-67.80</RightShoulderRoll>
+        </point>
+        <point time="1606580805621415960">
+            <RightElbowRoll>-50.50</RightElbowRoll>
+            <RightShoulderPitch>-13.60</RightShoulderPitch>
+            <RightShoulderRoll>-68.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805671513304">
+            <RightElbowRoll>-44.30</RightElbowRoll>
+            <RightShoulderPitch>-14.60</RightShoulderPitch>
+            <RightShoulderRoll>-70.00</RightShoulderRoll>
+        </point>
+        <point time="1606580805721450231">
+            <RightElbowRoll>-38.70</RightElbowRoll>
+            <RightShoulderPitch>-15.30</RightShoulderPitch>
+            <RightShoulderRoll>-70.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805771192679">
+            <RightElbowRoll>-33.90</RightElbowRoll>
+            <RightShoulderPitch>-15.90</RightShoulderPitch>
+            <RightShoulderRoll>-71.00</RightShoulderRoll>
+        </point>
+        <point time="1606580805820748460">
+            <RightElbowRoll>-29.30</RightElbowRoll>
+            <RightShoulderPitch>-16.30</RightShoulderPitch>
+            <RightShoulderRoll>-71.70</RightShoulderRoll>
+        </point>
+        <point time="1606580805871200231">
+            <RightElbowRoll>-25.40</RightElbowRoll>
+            <RightShoulderPitch>-16.60</RightShoulderPitch>
+            <RightShoulderRoll>-72.30</RightShoulderRoll>
+        </point>
+        <point time="1606580805920940491">
+            <RightElbowRoll>-22.40</RightElbowRoll>
+            <RightShoulderPitch>-17.60</RightShoulderPitch>
+            <RightShoulderRoll>-72.60</RightShoulderRoll>
+        </point>
+        <point time="1606580805971486481">
+            <RightElbowRoll>-20.20</RightElbowRoll>
+            <RightShoulderPitch>-18.50</RightShoulderPitch>
+            <RightShoulderRoll>-73.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806021045127">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-19.80</RightShoulderPitch>
+            <RightShoulderRoll>-73.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806070693356">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-21.80</RightShoulderPitch>
+            <RightShoulderRoll>-73.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806121149866">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-24.10</RightShoulderPitch>
+            <RightShoulderRoll>-73.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806174529814">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-27.00</RightShoulderPitch>
+            <RightShoulderRoll>-72.60</RightShoulderRoll>
+        </point>
+        <point time="1606580806221264397">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-29.90</RightShoulderPitch>
+            <RightShoulderRoll>-72.30</RightShoulderRoll>
+        </point>
+        <point time="1606580806271777002">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-34.20</RightShoulderPitch>
+            <RightShoulderRoll>-72.30</RightShoulderRoll>
+        </point>
+        <point time="1606580806322153304">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-38.70</RightShoulderPitch>
+            <RightShoulderRoll>-72.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806371614033">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-44.00</RightShoulderPitch>
+            <RightShoulderRoll>-71.70</RightShoulderRoll>
+        </point>
+        <point time="1606580806422460543">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-49.50</RightShoulderPitch>
+            <RightShoulderRoll>-71.30</RightShoulderRoll>
+        </point>
+        <point time="1606580806472459606">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-54.70</RightShoulderPitch>
+            <RightShoulderRoll>-70.70</RightShoulderRoll>
+        </point>
+        <point time="1606580806522005960">
+            <RightElbowRoll>-18.50</RightElbowRoll>
+            <RightShoulderPitch>-59.30</RightShoulderPitch>
+            <RightShoulderRoll>-70.00</RightShoulderRoll>
+        </point>
+        <point time="1606580806571760699">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-62.90</RightShoulderPitch>
+            <RightShoulderRoll>-68.70</RightShoulderRoll>
+        </point>
+        <point time="1606580806622256428">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-66.50</RightShoulderPitch>
+            <RightShoulderRoll>-67.80</RightShoulderRoll>
+        </point>
+        <point time="1606580806672588824">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-69.10</RightShoulderPitch>
+            <RightShoulderRoll>-66.50</RightShoulderRoll>
+        </point>
+        <point time="1606580806726405595">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-72.30</RightShoulderPitch>
+            <RightShoulderRoll>-65.50</RightShoulderRoll>
+        </point>
+        <point time="1606580806771268564">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-75.30</RightShoulderPitch>
+            <RightShoulderRoll>-64.80</RightShoulderRoll>
+        </point>
+        <point time="1606580806821178980">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-78.20</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580806870841741">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-81.10</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580806921399605">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-83.70</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580806971208408">
+            <RightElbowRoll>-18.90</RightElbowRoll>
+            <RightShoulderPitch>-85.70</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807020847835">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-87.30</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807071689553">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-88.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807121413460">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-90.30</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807174606793">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-90.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807221061793">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-90.90</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807270635855">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-90.30</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807321168928">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807371086220">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.30</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807420647782">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.30</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807472635022">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.30</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807522354189">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807571495386">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807621806272">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807673541272">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-63.80</RightShoulderRoll>
+        </point>
+        <point time="1606580807721632105">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807771343043">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807821369761">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807871380282">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807921401011">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580807971301636">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808021041063">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808071066011">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808121273355">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808171721480">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808221913511">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.60</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808272498615">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808321858355">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808371643407">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808421455230">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808471371636">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+        <point time="1606580808521395751">
+            <RightElbowRoll>-19.20</RightElbowRoll>
+            <RightShoulderPitch>-89.90</RightShoulderPitch>
+            <RightShoulderRoll>-64.20</RightShoulderRoll>
+        </point>
+    </waypoints>
+</gesture>

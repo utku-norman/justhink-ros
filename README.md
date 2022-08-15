@@ -67,6 +67,7 @@ If you use this work in an academic context, please cite the following publicati
 
 * [Robot Operating System (ROS)](https://docs.ros.org) (middleware for robotics)
 * [justhink_world](https://github.com/utku-norman/justhink_world) to represent the activities as worlds/problems with a state (that depends on [pomdp_py](https://h2r.github.io/pomdp-py/html/), [networkx](https://networkx.org/), [pyglet](https://pyglet.readthedocs.io/en/latest/), [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), and [pqdict](https://pypi.org/project/pqdict/))
+* [QTrobot ROS API headers](https://github.com/luxai-qtrobot/software/tree/master/headers) by LuxAI S.A. if you would like to use the the [justhink_robot](justhink_robot) package / QTrobot
 
 #### Building
 
@@ -120,7 +121,25 @@ For issues, details on installation and usage, refer to the [README](https://git
 pip install pyyaml rospkg empy
 ```
 
-7) Install the ROS packages (while the virtual environment is activated): 
+7) (needed for use with QTrobot only) Build the QTrobot ROS API headers (following [here](https://github.com/luxai-qtrobot/software/tree/master/headers)) to run with the robot:
+```
+cd ~/catkin_ws/src/justhink_robot
+mkdir -p temp; cd temp
+
+# Clone and copy the headers.
+git clone https://github.com/luxai-qtrobot/software.git
+cp -r software/headers/* ~/catkin_ws/src/
+
+# Cleanup.
+cd ..; rm -rf temp
+
+# Build the packages with ROS
+cd ~/catkin_ws
+catkin build qt_robot_interface qt_motors_controller qt_gesture_controller
+```
+
+
+8) Install the ROS packages (while the virtual environment is activated): 
 ```
 cd ~/catkin_ws
 
@@ -130,7 +149,7 @@ catkin build justhink_scenario
 
 catkin build justhink_agent
 
-catkin build qt_robot_interface qt_motors_controller qt_gesture_controller
+# For use with the QTrobot.
 catkin build justhink_robot
 
 source devel/setup.bash
@@ -139,7 +158,7 @@ source devel/setup.bash
 If you encounter an error `catkin: not found`, make sure you have sourced the ROS environment (i.e. `source ~/catkin_ws/devel/setup.bash` and `source /opt/ros/noetic/setup.bash`), and you have installed the catkin tools by `sudo apt-get install python-catkin-tools`.
 
 
-8) Check the installation of e.g. `justhink_msgs` by trying to import the messages and services in a Python interpreter (after sourcing the installation, i.e.: `source ~/catkin_ws/devel/setup.bash`):
+9) Check the installation of e.g. `justhink_msgs` by trying to import the messages and services in a Python interpreter (after sourcing the installation, i.e.: `source ~/catkin_ws/devel/setup.bash`):
 ```
 import justhink_msgs.msg
 import justhink_msgs.srv
