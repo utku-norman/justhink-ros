@@ -255,7 +255,7 @@ class ProfileScene(Scene):
         graphics.bg_sprite = pyglet.sprite.Sprite(
             image, batch=batch, group=groups[0])
 
-        # Initialise the buttons.
+        # Initialize the buttons.
         button_pad = 200
         c = image_container
         paths = {
@@ -283,7 +283,7 @@ class ProfileScene(Scene):
             200, 330, paths=paths, state=ButtonWidget.ENABLED, scale=0.25,
             batch=batch, group=groups[1])
 
-        # Initialise the text fields.
+        # Initialize the text fields.
         def valid_name(text): return text.isalpha() \
             and len(text) > 2
 
@@ -305,7 +305,7 @@ class ProfileScene(Scene):
             valid_func=valid_age, entry_func=valid_age_entry,
             batch=batch, group=groups[1])
 
-        # Initialise the text labels.
+        # Initialize the text labels.
         graphics.name_label = pyglet.text.Label(
             'Name:', x=100, y=height-280, font_name='Sans',
             font_size=font_size, color=BLACKA, batch=batch, group=groups[1])

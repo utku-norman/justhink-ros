@@ -11,12 +11,10 @@ from justhink_world.domain.action import PickAction, SuggestPickAction, \
 from justhink_world.agent import Agent
 
 
-# ROBOT_SPEAKING = '·····'
 ROBOT_SPEAKING = '(. . .)'
 
 
 def decode_state_message(data, graph) -> EnvState:
-    """TODO: docstring for decode_state_message"""
     network_state = NetworkState(graph)
     for edge in data.network.edges:
         network_state.subgraph.add_edge(edge.u, edge.v)
@@ -54,7 +52,6 @@ def decode_state_message(data, graph) -> EnvState:
 
 
 def decode_action_message(data):
-    """TODO: docstring for decode_action_message"""
     if data.agent == Agent.HUMAN:
         agent = Agent.HUMAN
     elif data.agent == Agent.ROBOT:
@@ -95,7 +92,6 @@ def decode_action_message(data):
 
 
 def make_drawing_message(current, u, v) -> justhink_msgs.msg.Drawing:
-    """TODO: docstring for make_drawing_message"""
     message = justhink_msgs.msg.Drawing()
 
     message.header.frame_id = current
@@ -108,7 +104,6 @@ def make_drawing_message(current, u, v) -> justhink_msgs.msg.Drawing:
 
 
 def make_button_message(current, name, state) -> justhink_msgs.msg.Button:
-    """TODO: docstring for make_button_message"""
     message = justhink_msgs.msg.Button()
 
     message.header.frame_id = current

@@ -12,7 +12,6 @@ import justhink_msgs.srv
 from justhink_world import create_all_worlds
 from justhink_world.visual import IntroWorldScene, TutorialWorldScene
 from justhink_world.domain.action import ResetAction
-# from justhink_world.domain.observation import Observation
 from justhink_world.tools.graphics import ButtonWidget, Graphics, BLACK, WHITEA
 from justhink_world.tools.read import load_image_from_reference
 
@@ -25,7 +24,6 @@ from .logging import log_publish, log_heard, log_service_response
 
 
 def show_scenario():
-    """TODO"""
     AppWindow()
 
     # Enter main event loop.
@@ -40,7 +38,7 @@ class AppWindow(pyglet.window.Window):
             'justhink_scenario.resources.images')
         self._init_graphics(width, height, image_container)
 
-        # Initialise the worlds.
+        # Initialize the worlds.
         worlds = create_all_worlds()
         self._worlds = worlds
 
@@ -495,7 +493,7 @@ class AppWindow(pyglet.window.Window):
     # ROS methods.
 
     def _init_ros(self):
-        # Initialise the services.
+        # Initialize the services.
         self.act_service = rospy.Service(
             '~act', justhink_msgs.srv.Act,
             self.reply_act_request)
@@ -520,7 +518,7 @@ class AppWindow(pyglet.window.Window):
             '~set_robot_text', justhink_msgs.srv.SetRobotText,
             self.reply_set_robot_text_request)
 
-        # Initialize robot behaviour services.
+        # Initialize robot behavior services.
         self.repeat_service_name = '/agent/cognition/repeat_speech'
         self.repeat_speech_service = rospy.ServiceProxy(
             self.repeat_service_name, justhink_msgs.srv.RepeatSpeech)
@@ -553,11 +551,11 @@ class AppWindow(pyglet.window.Window):
         self.key_release_pub = rospy.Publisher(
             '~key_release', justhink_msgs.msg.Key, queue_size=10)
 
-        # Initialise the subscribers.
+        # Initialize the subscribers.
         self.act_sub = rospy.Subscriber(
             '~act', justhink_msgs.msg.Action, self.act_callback)
 
-        # Initialise messages.
+        # Initialize messages.
         self.mouse_message = justhink_msgs.msg.Mouse()
         self.key_message = justhink_msgs.msg.Key()
 
@@ -595,7 +593,6 @@ class AppWindow(pyglet.window.Window):
         return resp
 
     def reply_pause_request(self, data):
-        """TODO"""
         resp = True
         try:
             self.set_paused(data.is_paused)
@@ -607,7 +604,6 @@ class AppWindow(pyglet.window.Window):
         return resp
 
     def reply_act_request(self, data):
-        """TODO"""
         resp = True
         try:
             action = decode_action_message(data.action)
@@ -620,13 +616,11 @@ class AppWindow(pyglet.window.Window):
         return resp
 
     def act_callback(self, data):
-        """TODO"""
         log_heard(self.act_sub, data)
         action = decode_action_message(data)
         self.execute_action(action)
 
     def reply_set_robot_text_request(self, data):
-        """TODO"""
         try:
             self.update_robot_text(data.text)
             self.graphics.repeat_button.set_state(ButtonWidget.ENABLED)

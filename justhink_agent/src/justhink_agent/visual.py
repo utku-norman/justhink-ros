@@ -121,16 +121,10 @@ class RoboticAgentWindow(pyglet.window.Window):
         graphics = Graphics(width, height, batch=batch)
         batch = graphics.batch
 
-        # self._surfaces = dict()
-        # self._rects = list()  # so that they are not destructed
-
-        # groups = [pyglet.graphics.OrderedGroup(i) for i in range(10)]
-
         padding = (50, 50, 40, 60)  # left, right, top, bottom
         x_pad, y_pad = (300, 100)
 
-        # Initialise "says" texts.
-        # y = padding[1]+5*height//6
+        # Initialize "says" texts.
         y = height - padding[2]
         graphics.says_heading_label = pyglet.text.Label(
             '(robot says)', x=padding[0], y=y, font_name='Sans',
@@ -139,8 +133,7 @@ class RoboticAgentWindow(pyglet.window.Window):
             self.says_text, x=padding[0]+x_pad, y=y, font_name='Sans',
             multiline=True, font_size=font_size, width=1500, batch=batch)
 
-        # Initialise "does" texts.
-        # y = padding[1]+3*height//6
+        # Initialize "does" texts.
         y = height - padding[2] - y_pad
         graphics.does_heading_label = pyglet.text.Label(
             '(robot does)', x=padding[0], y=y, font_name='Sans',

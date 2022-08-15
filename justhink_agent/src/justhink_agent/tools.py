@@ -3,7 +3,6 @@ import rosservice
 
 
 def make_service_proxy(name, cls, wait=True, timeout=None):
-    """TODO: docstring for make_service_proxy"""
     service_list = rosservice.get_service_list()
     is_available = name in service_list
     

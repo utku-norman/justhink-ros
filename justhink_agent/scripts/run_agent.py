@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
 # Runs the JUSThink robot cognition node.
-#
-#   rosrun justhink_agent run_agent.py
-#
 
 import rospy
 import pyglet
@@ -18,12 +15,10 @@ def run():
     print()
 
     try:
-        # Initialise the robot, that also initialises the window.
+        # Initialize the robot, that also initializes the window.
         robot = RoboticAgent()
         # Enter main event loop.
         pyglet.app.run()
-
-        # rospy.loginfo("Stopping robot activity...")
     except rospy.ROSInterruptException as e:
         rospy.logwarn(e)
 

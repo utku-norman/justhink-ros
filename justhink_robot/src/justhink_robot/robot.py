@@ -80,18 +80,12 @@ def get_robot_emotion_name(name):
 
 
 class Robot(object):
-    """A class to represent an the list of available robots.
-
-    Attributes:
-        TODO
-    """
+    """A class to represent an the list of available robots."""
     QTROBOT = 'QTrobot'
     REACHY = 'Reachy'
 
 
 class PhysicalRobot(object):
-    """docstring for PhysicalRobot"""
-
     def __init__(self, robot=Robot.QTROBOT):
         self.robot = robot
         self.is_robot_connected = False
@@ -109,7 +103,7 @@ class PhysicalRobot(object):
         print()
 
     def init_ros(self):
-        # Initialise the subscribers.
+        # Initialize the subscribers.
         self.say_sub = rospy.Subscriber(
             'embodiment/say', std_msgs.msg.String,
             self.say_callback)
@@ -129,7 +123,7 @@ class PhysicalRobot(object):
         else:
             raise NotImplementedError
 
-        # Initialise the services to offer.
+        # Initialize the services to offer.
         self.say_service = rospy.Service(
             'embodiment/say', justhink_msgs.srv.Say,
             self.reply_say_request)
@@ -155,14 +149,14 @@ class PhysicalRobot(object):
             'embodiment/stop_express', justhink_msgs.srv.StopExpress,
             self.reply_stop_express_request)
 
-        rospy.loginfo('Node initialised.')
+        rospy.loginfo('Node initialized.')
 
     def on_close(self):
         rospy.loginfo("Closing robot embodiment node.")
         rospy.signal_shutdown('Robot embodiment node is closed.')
 
     def init_qtrobot_ros(self):
-        # Initialise the publishers.
+        # Initialize the publishers.
         opts = {'data_class': std_msgs.msg.String, 'queue_size': 10}
         self.say_pub = rospy.Publisher('/qt_robot/behavior/talkText', **opts)
         self.express_pub = rospy.Publisher('/qt_robot/gesture/play', **opts)
@@ -171,7 +165,7 @@ class PhysicalRobot(object):
             '/qt_robot/head_position/command',
             std_msgs.msg.Float64MultiArray, queue_size=10)
 
-        # Initialise the services.
+        # Initialize the services.
         try:
             self.call_say = make_service_proxy(
                 '/qt_robot/behavior/talkText',

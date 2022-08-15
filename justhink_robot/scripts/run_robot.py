@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
 # Runs the JUSThink robot embodiment node.
-#
-#   rosrun justhink_robot run_robot.py
-#
 
 import rospy
 
@@ -11,13 +8,13 @@ from justhink_robot.robot import PhysicalRobot
 
 
 def run():
-    # Initialise the agent's ROS node.
+    # Initialize the agent's ROS node.
     rospy.init_node('embodiment', anonymous=False)
 
     rospy.loginfo("Starting a body node...")
 
     try:
-        # Initialise the robot, that also initialises the window.
+        # Initialize the robot, that also initializes the window.
         PhysicalRobot()
 
         # Enter main event loop.
