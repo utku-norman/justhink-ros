@@ -263,7 +263,7 @@ rm $ROS_LOG_DIR/agent_cognition.log
 
 export ROS_NAMESPACE=agent
 
-rosrun justhink_agent run_agent.py _instruct:=True _with_robot:=False
+rosrun justhink_agent run_agent.py _mode:=greedy _with_robot:=False
 ```
 
 
